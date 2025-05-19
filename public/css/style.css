@@ -179,7 +179,7 @@ input[type="email"]::placeholder {
     opacity: 1;
 }
 
-button[type="submit"], .button {
+button[type="submit"], button, .button {
     display: inline-block;
     padding: 15px 40px;
     margin-top: 20px;
