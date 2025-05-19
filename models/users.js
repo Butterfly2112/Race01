@@ -75,14 +75,14 @@ class Users extends Model {
                         'VALUES (?, ?, ?, ?, ?)', [login, password, fullname, email, status],
                         (err, res) => {
                             if (err) {
-                                return reject({error_code: 'EMAIL_EXISTS', error_message: 'This email already exists'});
+                                return resolve({error_code: 'EMAIL_EXISTS', error_message: 'This email already exists'});
                             }
 
                             resolve(res);
                         });
                 }
                 else {
-                    return reject({error_code: 'USER_EXISTS', error_message: 'This user already exists'});
+                    return resolve({error_code: 'USER_EXISTS', error_message: 'This user already exists'});
                 }
             });
         });

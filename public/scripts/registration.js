@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                messageDiv.textContent = `Error: ${errorData.error_message || 'An unknown error occurred.'}`;
+                messageDiv.textContent = `Error: ${errorData.error || 'An unknown error occurred.'}`;
                 messageDiv.className = 'error';
                 return;
             }
