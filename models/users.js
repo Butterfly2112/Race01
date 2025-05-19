@@ -41,7 +41,7 @@ class Users extends Model {
 
     static updatePassword(email, password) {
         return new Promise((resolve, reject) => {
-            connection.query('UPDATE users SET password = ? WHERE email_address = ?', [password, email], (err, res) => {
+            connection.query('UPDATE users SET password = ? WHERE email_address = ?', [password, email], (err) => {
                 if (err) {
                     return reject(new Error('Failed to process a query: ' + err));
                 }
