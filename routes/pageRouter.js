@@ -26,11 +26,11 @@ pageRouter.get('/remind_password', redirectToMainPage, (req, res) => {
 });
 
 pageRouter.get('/lobby', authenticate, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'lobby.html'));
+    res.sendFile(path.join(__dirname, '/views/lobby.html'));
 });
 
 pageRouter.get('/room', authenticate, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'room.html'));
+    res.sendFile(path.join(__dirname, '/views/room.html'));
 });
 
 export default pageRouter;
