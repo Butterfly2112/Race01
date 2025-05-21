@@ -33,4 +33,8 @@ pageRouter.get('/room', authenticate, (req, res) => {
     res.sendFile(path.join(__dirname, '/views/room.html'));
 });
 
+pageRouter.get('/game', authenticate, (req, res) => {
+    res.sendFile(path.join(__dirname, '/views/game-page.html'));
+});
+
 export default pageRouter;
