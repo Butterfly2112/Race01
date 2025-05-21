@@ -2,15 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Game page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Page</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chat.css">
 </head>
 <body>
-    <div>
-        <form>
-            <input type="text" name="message" placeholder="Enter your message">
-            <input type="submit" value="Send">
+    <div id="chat-container">
+        <div id="chat-messages">
+        </div>
+        <form id="chat-form">
+            <input type="text" name="message" id="chat-input" placeholder="Type a message..." autocomplete="off">
+            <button type="submit" id="chat-send-button">Send</button>
         </form>
     </div>
+
     <script src="/scripts/game.js" type="module"></script>
 </body>
 </html>

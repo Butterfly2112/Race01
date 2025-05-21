@@ -1,6 +1,6 @@
 import { io } from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
 const form = document.querySelector('form');
-const div = document.querySelector('div');
+const div = document.getElementById('chat-messages');
 
 const socket = io('http://localhost:3000');
 
@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-
-        socket.emit('message-sent', roomId, form.message.value);
+        const text = form.message.value.trim();
+        if (!text) return;
+        socket.emit('message-sent', roomId, text);
+        form.message.value = '';
     });
 });
