@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Page</title>
-    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/game-page.css">
 </head>
 <body class="game-background">
@@ -16,6 +15,53 @@
             <button type="submit" id="chat-send-button">Send</button>
         </form>
     </div>
+
+<div class="opponent-zone-container">
+    <div class="player-info opponent-info">
+        <img id="opponent-avatar" src="/images/default-avatar.jpg" alt="Opponent Avatar" class="avatar">
+        <div class="player-details">
+            <span id="opponent-login" class="player-login">Opponent</span>
+            <div class="hp-bar-container">
+                <div id="opponent-hp-bar" class="hp-bar">
+                    <span id="opponent-hp-text" class="hp-text">20/20 HP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="opponent-cards-top-center" class="face-down-cards-area">
+    <div class="face-down-card"></div>
+    <div class="face-down-card"></div>
+    <div class="face-down-card"></div>
+    <div class="face-down-card"></div>
+    <div class="face-down-card"></div>
+</div>
+
+<div id="player-hand-container" class="player-hand"></div>
+<div class="player-controls-area">
+    <div class="player-info self-player-info">
+        <img id="player-avatar" src="/images/default-avatar.jpg" alt="Player Avatar" class="avatar">
+        <div class="player-details">
+            <span id="player-login" class="player-login">You</span>
+            <div class="hp-bar-container">
+                <div id="player-hp-bar" class="hp-bar player-hp-color">
+                    <span id="player-hp-text" class="hp-text">20/20 HP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="player-actions-bar self-player-actions">
+        <div id="timer-display-text-container">
+            Time: <span id="timer-seconds-text">30</span>s
+        </div>
+        <div class="timer-progress-bar-container">
+            <div id="timer-progress-bar-fill"></div>
+        </div>
+        <button id="end-turn-button" class="button">End Turn</button>
+    </div>
+</div>
 
     <script src="/scripts/game.js" type="module"></script>
 </body>
