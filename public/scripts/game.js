@@ -20,9 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(message);
     });
 
-    socket.on('draw-cards', (player1Cards, player2Cards) => {
-        console.log(player1Cards);
-        console.log(player2Cards);
+    socket.on('draw-cards', (player) => {
+        console.log(player);
     });
 
     form.addEventListener('submit', (event) => {
@@ -32,4 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.emit('message-sent', roomId, text);
         form.message.value = '';
     });
+});
+
+window.addEventListener('beforeunload', () => {
+    socket.disconnect();
 });

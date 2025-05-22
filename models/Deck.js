@@ -13,7 +13,7 @@ export class Deck {
         }
     }
 
-    getCards(n) {
+    getCards(n, firstTurn = false) {
         const cards = [];
 
         for (let i = 0; i < n; i++) {
@@ -21,8 +21,22 @@ export class Deck {
 
             const index = Math.floor(Math.random() * this.size);
             const [card] = this.cards.splice(index, 1);
-            cards.push(new Card(card.name, card.atk, card.def, card.cost));
+            cards.push(new Card(card.name, card.atk, card.def, card.cost, card.cost));
             this.size--;
+        }
+
+        if (firstTurn && !cards.some(card => card.cost === 1)) {
+            const rarityOneIndex = this.cards.findIndex(card => card.cost === 1);
+            if (rarityOneIndex !== -1) {
+                const [rareCard] = this.cards.splice(rarityOneIndex, 1);
+                this.size--;
+
+                const removed = cards.pop();
+                this.cards.push(removed);
+                this.size++;
+
+                cards.push(new Card(rareCard.name, rareCard.atk, rareCard.def, rareCard.cost, rareCard.cost));
+            }
         }
 
         return cards;

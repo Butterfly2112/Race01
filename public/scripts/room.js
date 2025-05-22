@@ -41,3 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `/game?roomId=${roomId}`;
     });
 });
+
+window.addEventListener('beforeunload', () => {
+    socket.disconnect();
+});
