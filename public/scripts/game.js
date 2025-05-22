@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(message);
     });
 
+    socket.on('draw-cards', (player1Cards, player2Cards) => {
+        console.log(player1Cards);
+        console.log(player2Cards);
+    });
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const text = form.message.value.trim();

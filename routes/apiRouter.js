@@ -19,7 +19,8 @@ apiRouter.post('/logout', (req, res) => {
 apiRouter.get('/user/me', authenticate, (req, res) => {
     if (req.login && req.login.login) {
         res.json({ login: req.login.login });
-    } else {
+    }
+    else {
         res.status(401).json({ error: 'Not authenticated or user data missing' });
     }
 });
