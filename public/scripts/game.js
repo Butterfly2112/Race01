@@ -146,8 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('draw-cards', (info) => {
         //if (playerLogin && info.opponent) playerLogin.textContent = info.opponent;
-        opponentLogin.textContent = info.opponent;
+        opponentLogin.textContent = info.opponent.login;
         playerLogin.textContent = info.player.login;
+        console.log(info.turn);
+        console.log(info.opponent);
         renderHand(info.player.cards);
     });
 

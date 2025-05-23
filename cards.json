@@ -118,5 +118,65 @@
     "atk": 1,
     "def": 2,
     "cost": 1
+  },
+  {
+    "name": "Night furry",
+    "atk": 7,
+    "def": 0,
+    "cost": 3
+  },
+  {
+    "name": "Meowgiсian",
+    "atk": 3,
+    "def": 1,
+    "cost": 2
+  },
+  {
+    "name": "The light of hope",
+    "atk": 0,
+    "def": 8,
+    "cost": 3
+  },
+  {
+    "name": "Wewewe",
+    "atk": 1,
+    "def": 2,
+    "cost": 1
+  },
+  {
+    "name": "Espionage Agent",
+    "atk": 1,
+    "def": 2,
+    "cost": 1
+  },
+  {
+    "name": "All in",
+    "atk": 3,
+    "def": 2,
+    "cost": 2
+  },
+  {
+    "name": "True pain",
+    "atk": 4,
+    "def": 1,
+    "cost": 2
+  },
+  {
+    "name": "Wait… What?",
+    "atk": 1,
+    "def": 1,
+    "cost": 1
+  },
+  {
+    "name": "Zoning Out",
+    "atk": 0,
+    "def": 3,
+    "cost": 1
+  },
+  {
+    "name": "How dare you?",
+    "atk": 2,
+    "def": 1,
+    "cost": 1
   }
 ]
