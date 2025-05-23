@@ -63,7 +63,9 @@ const createCard = ({ imagePath, name, id }, i, total) => {
     card.classList.add('card');
     card.dataset.cardId = id;
     card.addEventListener('click', () => {
-        if (isPlayerTurn && roomId) socket.emit('player-action', { type: 'PLAY_CARD', cardId: id, roomId });
+        if (isPlayerTurn && roomId) {
+            socket.emit('play-card', { roomId, cardId: id });// Notify the server about the played card
+        }
     });
 
     if (imagePath) {
