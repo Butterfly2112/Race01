@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(100) NOT NULL,
     fullname VARCHAR(100) NOT NULL,
     email_address VARCHAR (255) NOT NULL UNIQUE,
-    status ENUM('admin', 'user') NOT NULL
+    status ENUM('admin', 'user') NOT NULL,
+    profile_picture VARCHAR(100) NOT NULL
 );
