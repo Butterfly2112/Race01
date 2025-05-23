@@ -7,6 +7,7 @@ const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const handContainer = document.getElementById('player-hand-container');
 const playerLogin = document.getElementById('player-login');
+const opponentLogin = document.getElementById('opponent-login');
 
 let playerState = { hand: [] };
 let roomId = '';
@@ -102,9 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(message);
     });
 
-    socket.on('draw-cards', ({ cards = [], login }) => {
-        if (playerLogin && login) playerLogin.textContent = login;
-        renderHand(cards);
+    socket.on('draw-cards', (info) => {
+        //if (playerLogin && info.opponent) playerLogin.textContent = info.opponent;
+        opponentLogin.textContent = info.opponent;
+        playerLogin.textContent = info.player.login;
+        renderHand(info.player.cards);
     });
 
     socket.on('turn-update', ({ isYourTurn }) => {
