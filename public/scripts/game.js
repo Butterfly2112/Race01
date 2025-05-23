@@ -88,6 +88,47 @@ const renderHand = (cards = []) => {
     playerState.hand.forEach((c, i) => handContainer.appendChild(createCard(c, i, playerState.hand.length)));
 };
 
+function determineFirstTurn() {
+    const overlay = document.getElementById('turn-decider-overlay');
+    const orb = document.getElementById('selector-orb');
+    const resultText = document.getElementById('turn-decider-result-text');
+    const playerIndicator = document.querySelector('.player-indicator.self');
+    const opponentIndicator = document.querySelector('.player-indicator.opponent');
+
+    overlay.classList.remove('hidden');
+    orb.classList.add('animating');
+    resultText.textContent = '';
+    playerIndicator.classList.remove('selected');
+    opponentIndicator.classList.remove('selected');
+
+    let steps = 7 + Math.floor(Math.random() * 4);
+    let current = 0;
+
+    const animate = () => {
+        const isPlayer = current % 2 === 0;
+        orb.style.left = isPlayer ? '0%' : '100%';
+        current++;
+
+        if (current <= steps) {
+            setTimeout(animate, 300);
+        } else {
+            orb.classList.remove('animating');
+            const winner = Math.random() < 0.5 ? 'player' : 'opponent';
+            orb.style.left = winner === 'player' ? '0%' : '100%';
+            if (winner === 'player') {
+                resultText.textContent = 'You go first!';
+                playerIndicator.classList.add('selected');
+            } else {
+                resultText.textContent = 'Opponent goes first!';
+                opponentIndicator.classList.add('selected');
+            }
+            setTimeout(() => overlay.classList.add('hidden'), 3000);
+        }
+    };
+
+    setTimeout(animate, 500);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     roomId = urlParams.get('roomId');
@@ -110,9 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderHand(info.player.cards);
     });
 
-    socket.on('turn-update', ({ isYourTurn }) => {
-        isPlayerTurn = isYourTurn;
-    });
+    determineFirstTurn();
 
     if (chatForm && chatInput) {
         chatForm.addEventListener('submit', (e) => {

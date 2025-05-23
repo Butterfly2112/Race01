@@ -7,6 +7,27 @@
     <link rel="stylesheet" href="/css/game-page.css">
 </head>
 <body class="game-background">
+
+    <div id="turn-decider-overlay" class="turn-decider-overlay hidden">
+        <div class="turn-decider-box">
+            <h2 id="turn-decider-message">Determining first turn...</h2>
+            <div class="player-indicators-container">
+                <div class="player-indicator self">
+                    <img id="decider-player-avatar" src="/images/default-avatar.jpg" alt="Your Avatar" class="avatar">
+                    <span id="decider-player-login" class="player-login">You</span>
+                </div>
+                <div class="selector-track">
+                    <div id="selector-orb"></div>
+                </div>
+                <div class="player-indicator opponent">
+                    <img id="decider-opponent-avatar" src="/images/default-avatar.jpg" alt="Opponent's Avatar" class="avatar">
+                    <span id="decider-opponent-login" class="player-login">Opponent</span>
+                </div>
+            </div>
+            <p id="turn-decider-result-text" class="result-text"></p>
+        </div>
+    </div>
+
     <div id="chat-container">
         <div id="chat-messages">
         </div>
