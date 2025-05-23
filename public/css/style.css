@@ -201,6 +201,21 @@ button[type="submit"]:hover {
     transform: translateY(-3px);
 }
 
+button#start_the_game {
+    transition: background 0.3s ease, box-shadow 0.3 ease;
+}
+
+button#start_the_game:disabled {
+    background-color: #5c5c5c;
+    color: #c7c7c7;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.8;
+    transform: none;
+}
+
+button#start_the_game:disabled:hover { transform: none; }
+
 .container p a {
     color: #fdfdfd;
     text-decoration: underline;
