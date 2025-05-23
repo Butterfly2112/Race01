@@ -112,7 +112,7 @@ const renderHand = (cards = []) => {
     playerState.hand.forEach((c, i) => handContainer.appendChild(createCard(c, i, playerState.hand.length)));
 };
 
-function determineFirstTurn() {
+function determineFirstTurn(turnLogin, selfLogin) {
     const overlay = document.getElementById('turn-decider-overlay');
     const orb = document.getElementById('selector-orb');
     const resultText = document.getElementById('turn-decider-result-text');
@@ -137,15 +137,18 @@ function determineFirstTurn() {
             setTimeout(animate, 300);
         } else {
             orb.classList.remove('animating');
-            const winner = Math.random() < 0.5 ? 'player' : 'opponent';
-            orb.style.left = winner === 'player' ? '0%' : '100%';
-            if (winner === 'player') {
+
+            const winnerIsPlayer = turnLogin === selfLogin;
+            orb.style.left = winnerIsPlayer ? '0%' : '100%';
+
+            if (winnerIsPlayer) {
                 resultText.textContent = 'You go first!';
                 playerIndicator.classList.add('selected');
             } else {
                 resultText.textContent = 'Opponent goes first!';
                 opponentIndicator.classList.add('selected');
             }
+
             setTimeout(() => overlay.classList.add('hidden'), 3000);
         }
     };
@@ -168,16 +171,21 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(message);
     });
 
+    let hasShownFirstTurn = sessionStorage.getItem('hasShownFirstTurn') === 'true';
+
     socket.on('draw-cards', (info) => {
-        //if (playerLogin && info.opponent) playerLogin.textContent = info.opponent;
         opponentLogin.textContent = info.opponent.login;
         playerLogin.textContent = info.player.login;
-        console.log(info.turn);
-        console.log(info.opponent);
         renderHand(info.player.cards);
-    });
 
-    determineFirstTurn();
+        const selfLogin = info.player.login;
+
+        if (!hasShownFirstTurn) {
+            determineFirstTurn(info.turn, selfLogin);
+            hasShownFirstTurn = true;
+            sessionStorage.setItem('hasShownFirstTurn', 'true');
+        }
+    });
 
     if (chatForm && chatInput) {
         chatForm.addEventListener('submit', (e) => {
