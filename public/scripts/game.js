@@ -14,12 +14,36 @@ let roomId = '';
 let isPlayerTurn = false;
 
 const nameToFile = {
-    "😡😡😡": "Angry_cat", "Abduction!": "Abduction", "That’s suspicious": "That’s suspicious",
-    "Bombastic side eye": "Bombastic side eye", "eepy car": "eepy cat", "Me and Pookie🩷": "Me and Pookie",
-    "HAHAHFIUSEJHIOHDS": "HAHAHFIUSEJHIOHDS", "Sniffer": "Sniffer", "Absolute Cinema": "Absolute Cinema",
-    "I’m just a boy🧢": "I’m just a boy", "Good Boy": "Good boy", "What Are You Looking At?": "What Are You Looking At",
-    "Problem Solved": "Problem Solved", "Let Him Cook": "Let Him Cook", "He Knows What You Did": "He knows what you did",
-    "Smoll🤏": "Smoll", "Side-Eye": "Side-eye", "Nerd": "Uhm, actually", "Loading...": "Loading", "Hehe": "Hehe"
+    "😡😡😡": "Angry_cat",
+    "Abduction!": "Abduction",
+    "That’s suspicious": "That’s suspicious",
+    "Bombastic side eye": "Bombastic side eye",
+    "eepy car": "eepy cat",
+    "Me and Pookie🩷": "Me and Pookie",
+    "HAHAHFIUSEJHIOHDS": "HAHAHFIUSEJHIOHDS",
+    "Sniffer": "Sniffer",
+    "Absolute Cinema": "Absolute Cinema",
+    "I’m just a boy🧢": "I’m just a boy",
+    "Good Boy": "Good boy",
+    "What Are You Looking At?": "What Are You Looking At",
+    "Problem Solved": "Problem Solved",
+    "Let Him Cook": "Let Him Cook",
+    "He Knows What You Did": "He knows what you did",
+    "Smoll🤏": "Smoll",
+    "Side-Eye": "Side-eye",
+    "Nerd": "Uhm, actually",
+    "Loading...": "Loading",
+    "Hehe": "Hehe",
+    "Night furry": "Night furry",
+    "Meowgiсian": "Meowgitian",
+    "The light of hope": "The light of hope",
+    "Wewewe": "Wewewe",
+    "Espionage Agent": "Espionage Agent",
+    "All in": "All in",
+    "True pain": "True pain",
+    "Wait… What?": "Wait What",
+    "Zoning Out": "Zoning Out",
+    "How dare you?": "How dare you"
 };
 
 function addMessage(message) {
@@ -39,7 +63,9 @@ const createCard = ({ imagePath, name, id }, i, total) => {
     card.classList.add('card');
     card.dataset.cardId = id;
     card.addEventListener('click', () => {
-        if (isPlayerTurn && roomId) socket.emit('player-action', { type: 'PLAY_CARD', cardId: id, roomId });
+        if (isPlayerTurn && roomId) {
+            socket.emit('play-card', { roomId, cardId: id });// Notify the server about the played card
+        }
     });
 
     if (imagePath) {
@@ -88,7 +114,7 @@ const renderHand = (cards = []) => {
     playerState.hand.forEach((c, i) => handContainer.appendChild(createCard(c, i, playerState.hand.length)));
 };
 
-function determineFirstTurn() {
+function determineFirstTurn(turnLogin, selfLogin) {
     const overlay = document.getElementById('turn-decider-overlay');
     const orb = document.getElementById('selector-orb');
     const resultText = document.getElementById('turn-decider-result-text');
@@ -113,20 +139,78 @@ function determineFirstTurn() {
             setTimeout(animate, 300);
         } else {
             orb.classList.remove('animating');
-            const winner = Math.random() < 0.5 ? 'player' : 'opponent';
-            orb.style.left = winner === 'player' ? '0%' : '100%';
-            if (winner === 'player') {
+
+            const winnerIsPlayer = turnLogin === selfLogin;
+            orb.style.left = winnerIsPlayer ? '0%' : '100%';
+
+            if (winnerIsPlayer) {
                 resultText.textContent = 'You go first!';
                 playerIndicator.classList.add('selected');
             } else {
                 resultText.textContent = 'Opponent goes first!';
                 opponentIndicator.classList.add('selected');
             }
+
             setTimeout(() => overlay.classList.add('hidden'), 3000);
         }
     };
 
     setTimeout(animate, 500);
+}
+
+let timerInterval;
+let timeLeft = 30;
+
+const timerSecondsText = document.getElementById('timer-seconds-text');
+const progressFill = document.getElementById('timer-progress-bar-fill');
+const endTurnButton = document.getElementById('end-turn-button');
+
+function updateTimerUI(secondsLeft) {
+    if (timerSecondsText) timerSecondsText.textContent = secondsLeft;
+    if (progressFill) progressFill.style.width = `${(secondsLeft / 30) * 100}%`;
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    if (endTurnButton) {
+        endTurnButton.disabled = true;
+        endTurnButton.classList.remove('active');
+    }
+}
+
+function startTimer() {
+    timeLeft = 30;
+    updateTimerUI(timeLeft);
+    if (endTurnButton) {
+        endTurnButton.disabled = false;
+        endTurnButton.classList.add('active');
+    }
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerUI(timeLeft);
+        if (timeLeft <= 0) {
+            stopTimer();
+            isPlayerTurn = false;
+            socket.emit('end-turn', roomId); // Notify the server that the turn has ended
+        }
+    }, 1000);
+}
+
+function showFullTimer() {
+    stopTimer();
+    timeLeft = 30;
+    updateTimerUI(timeLeft);
+}
+
+if (endTurnButton) {
+    endTurnButton.addEventListener('click', () => {
+        if (isPlayerTurn) {
+            stopTimer();
+            isPlayerTurn = false;
+            socket.emit('end-turn', roomId); // Notify the server that the turn has ended
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -144,16 +228,29 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(message);
     });
 
+    let hasShownFirstTurn = sessionStorage.getItem('hasShownFirstTurn') === 'true';
+
     socket.on('draw-cards', (info) => {
-        //if (playerLogin && info.opponent) playerLogin.textContent = info.opponent;
         opponentLogin.textContent = info.opponent.login;
         playerLogin.textContent = info.player.login;
-        console.log(info.turn);
-        console.log(info.opponent);
         renderHand(info.player.cards);
-    });
 
-    determineFirstTurn();
+        const selfLogin = info.player.login;
+
+        if (!hasShownFirstTurn) {
+            determineFirstTurn(info.turn, selfLogin);
+            hasShownFirstTurn = true;
+            sessionStorage.setItem('hasShownFirstTurn', 'true');
+        }
+        if (info.turn === selfLogin) {
+            isPlayerTurn = true;
+            startTimer();
+        } else {
+            isPlayerTurn = false;
+            showFullTimer();
+        }
+
+    });
 
     if (chatForm && chatInput) {
         chatForm.addEventListener('submit', (e) => {
