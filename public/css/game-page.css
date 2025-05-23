@@ -194,22 +194,6 @@ button:hover {
     box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
 }
 
-.battlefield-middle-indicator {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    padding: 10px 20px;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #ffde7a;
-    text-shadow: 1px 1px 3px #000;
-    background-color: rgba(0,0,0,0.3);
-    border-radius: 8px;
-    z-index: 5;
-}
-
 .player-hand {
     position: fixed;
     bottom: 20px;
@@ -275,28 +259,26 @@ button:hover {
 }
 
 #timer-display-text-container {
-    font-size: 1.1em;
-    color: #ffde7a;
+    font-size: 1.2em;
     font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-    margin-bottom: 4px;
+    color: #fde19a;
+    margin-bottom: -10px;
+    text-align: center;
 }
 
 .timer-progress-bar-container {
-    width: 180px;
-    height: 10px;
-    background-color: #151515;
-    border-radius: 5px;
-    border: 1px solid #333;
+    width: 200px;
+    height: 9px;
+    border-radius: 7px;
     overflow: hidden;
+    margin-bottom: 5px;
 }
 
 #timer-progress-bar-fill {
     height: 100%;
     width: 100%;
-    background: #000;
-    border-radius: 4px;
-    transition: width 1s linear;
+    background: linear-gradient(90deg, #f8cd4b 60%, #fdeda5 100%);
+    transition: width 0.3s;
 }
 
 #end-turn-button:hover {

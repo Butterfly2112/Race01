@@ -156,6 +156,61 @@ function determineFirstTurn(turnLogin, selfLogin) {
     setTimeout(animate, 500);
 }
 
+let timerInterval;
+let timeLeft = 30;
+
+const timerSecondsText = document.getElementById('timer-seconds-text');
+const progressFill = document.getElementById('timer-progress-bar-fill');
+const endTurnButton = document.getElementById('end-turn-button');
+
+function updateTimerUI(secondsLeft) {
+    if (timerSecondsText) timerSecondsText.textContent = secondsLeft;
+    if (progressFill) progressFill.style.width = `${(secondsLeft / 30) * 100}%`;
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    if (endTurnButton) {
+        endTurnButton.disabled = true;
+        endTurnButton.classList.remove('active');
+    }
+}
+
+function startTimer() {
+    timeLeft = 30;
+    updateTimerUI(timeLeft);
+    if (endTurnButton) {
+        endTurnButton.disabled = false;
+        endTurnButton.classList.add('active');
+    }
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerUI(timeLeft);
+        if (timeLeft <= 0) {
+            stopTimer();
+            isPlayerTurn = false;
+            socket.emit('end-turn', roomId); // Notify the server that the turn has ended
+        }
+    }, 1000);
+}
+
+function showFullTimer() {
+    stopTimer();
+    timeLeft = 30;
+    updateTimerUI(timeLeft);
+}
+
+if (endTurnButton) {
+    endTurnButton.addEventListener('click', () => {
+        if (isPlayerTurn) {
+            stopTimer();
+            isPlayerTurn = false;
+            socket.emit('end-turn', roomId); // Notify the server that the turn has ended
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     roomId = urlParams.get('roomId');
@@ -185,6 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
             hasShownFirstTurn = true;
             sessionStorage.setItem('hasShownFirstTurn', 'true');
         }
+        if (info.turn === selfLogin) {
+            isPlayerTurn = true;
+            startTimer();
+        } else {
+            isPlayerTurn = false;
+            showFullTimer();
+        }
+
     });
 
     if (chatForm && chatInput) {
