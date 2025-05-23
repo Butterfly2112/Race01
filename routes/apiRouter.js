@@ -1,28 +1,37 @@
 import express from 'express';
 import multer from 'multer';
-import { registerUser, loginUser, remindPassword } from "../controllers/apiControllers.js";
-import { authenticate } from '../middleware/authentication.js'; // Import the authenticate middleware
+import * as apiController from "../controllers/apiControllers.js";
+import { authenticate } from '../middleware/authentication.js';
 
 const apiRouter = express.Router();
-const upload = multer();
 
-apiRouter.post('/register', upload.none(), registerUser);
-apiRouter.post('/login', upload.none(), loginUser);
-apiRouter.post('/remind', upload.none(), remindPassword);
-
-apiRouter.post('/logout', (req, res) => {
-    res.clearCookie('token');
-    res.status(200).send();
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
 });
 
-// new GET-endpoint
-apiRouter.get('/user/me', authenticate, (req, res) => {
-    if (req.login && req.login.login) {
-        res.json({ login: req.login.login });
+const filter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
     }
     else {
-        res.status(401).json({ error: 'Not authenticated or user data missing' });
+        cb({error: 'You can only upload images'}, false);
     }
-});
+}
+
+const upload = multer({ storage, filter });
+
+apiRouter.post('/register', upload.none(), apiController.registerUser);
+apiRouter.post('/login', upload.none(), apiController.loginUser);
+apiRouter.post('/remind', upload.none(), apiController.remindPassword);
+apiRouter.post('/profile_picture', authenticate, upload.single('file'), apiController.uploadPFP);
+apiRouter.post('/logout', apiController.logout);
+
+apiRouter.get('/user/me', authenticate, apiController.getMe);
+apiRouter.get('/profile_picture', authenticate, apiController.getPFP);
 
 export default apiRouter;

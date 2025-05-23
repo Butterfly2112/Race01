@@ -71,8 +71,8 @@ class Users extends Model {
                 if (err) return reject(new Error(`Failed to process a query: ${err}`));
 
                 if (!res[0]) {
-                    connection.query('INSERT INTO users(login, password, fullname, email_address, status)' +
-                        'VALUES (?, ?, ?, ?, ?)', [login, password, fullname, email, status],
+                    connection.query('INSERT INTO users(login, password, fullname, email_address, status, profile_picture) ' +
+                        'VALUES (?, ?, ?, ?, ?, ?)', [login, password, fullname, email, status, './uploads/default.png'],
                         (err, res) => {
                             if (err) {
                                 return resolve({error_code: 'EMAIL_EXISTS', error_message: 'This email already exists'});
@@ -85,6 +85,30 @@ class Users extends Model {
                     return resolve({error_code: 'USER_EXISTS', error_message: 'This user already exists'});
                 }
             });
+        });
+    }
+
+    static savePFP(login, pfp_path) {
+        return new Promise((resolve, reject) => {
+            connection.query('UPDATE users SET profile_picture = ? WHERE login = ?', [pfp_path, login], (err) => {
+                if (err) {
+                    return reject(new Error('Failed to process a query: ' + err));
+                }
+
+                resolve();
+            });
+        });
+    }
+
+    static getPFP(login) {
+        return new Promise((resolve, reject) => {
+           connection.query('SELECT profile_picture FROM users WHERE login = ?', [login], (err, res) => {
+               if (err) {
+                   return reject(new Error('Failed to process a query: ' + err));
+               }
+
+               resolve(res[0]);
+           });
         });
     }
 }

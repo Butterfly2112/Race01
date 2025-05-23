@@ -98,4 +98,43 @@ const remindPassword = async (req, res) => {
     }
 }
 
-export { registerUser, loginUser, remindPassword }
+const logout = (req, res) => {
+    res.clearCookie('token');
+    res.status(200).send();
+}
+
+const getMe = (req, res) => {
+    if (req.login && req.login.login) {
+        res.json({ login: req.login.login });
+    }
+    else {
+        res.status(401).json({ error: 'Not authenticated or user data missing' });
+    }
+}
+
+const uploadPFP = async (req, res) => {
+    const { login } = req.login;
+    const file = req.file;
+
+    try {
+        await User.savePFP(login, file.destination + '/' + file.filename)
+        res.status(200).send();
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+const getPFP = async (req, res) => {
+    const { login } = req.login;
+
+    try {
+        const response = await User.getPFP(login);
+        res.status(200).json({ pfpUrl: response.profile_picture });
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+export { registerUser, loginUser, remindPassword, logout, getMe, uploadPFP, getPFP };
