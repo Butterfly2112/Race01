@@ -1,5 +1,5 @@
-import {Deck} from "../models/Deck.js";
-import {Player} from "../models/Player.js";
+import { Deck } from "../models/Deck.js";
+import { Player } from "../models/Player.js";
 
 export const startGame = (io, socket, roomID) => {
     io.to(roomID).emit('redirect-to-game');
@@ -39,7 +39,6 @@ export const gameStarted = async (io, socket, roomID, games) => {
             const [socket1, socket2] = game.sockets;
 
             game.turn = Math.random() < 0.5 ? player1.login : player2.login;
-            console.log(game.turn);
 
             io.to(socket1).emit('draw-cards', {
                 player: player1,
