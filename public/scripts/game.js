@@ -14,12 +14,36 @@ let roomId = '';
 let isPlayerTurn = false;
 
 const nameToFile = {
-    "😡😡😡": "Angry_cat", "Abduction!": "Abduction", "That’s suspicious": "That’s suspicious",
-    "Bombastic side eye": "Bombastic side eye", "eepy car": "eepy cat", "Me and Pookie🩷": "Me and Pookie",
-    "HAHAHFIUSEJHIOHDS": "HAHAHFIUSEJHIOHDS", "Sniffer": "Sniffer", "Absolute Cinema": "Absolute Cinema",
-    "I’m just a boy🧢": "I’m just a boy", "Good Boy": "Good boy", "What Are You Looking At?": "What Are You Looking At",
-    "Problem Solved": "Problem Solved", "Let Him Cook": "Let Him Cook", "He Knows What You Did": "He knows what you did",
-    "Smoll🤏": "Smoll", "Side-Eye": "Side-eye", "Nerd": "Uhm, actually", "Loading...": "Loading", "Hehe": "Hehe"
+    "😡😡😡": "Angry_cat",
+    "Abduction!": "Abduction",
+    "That’s suspicious": "That’s suspicious",
+    "Bombastic side eye": "Bombastic side eye",
+    "eepy car": "eepy cat",
+    "Me and Pookie🩷": "Me and Pookie",
+    "HAHAHFIUSEJHIOHDS": "HAHAHFIUSEJHIOHDS",
+    "Sniffer": "Sniffer",
+    "Absolute Cinema": "Absolute Cinema",
+    "I’m just a boy🧢": "I’m just a boy",
+    "Good Boy": "Good boy",
+    "What Are You Looking At?": "What Are You Looking At",
+    "Problem Solved": "Problem Solved",
+    "Let Him Cook": "Let Him Cook",
+    "He Knows What You Did": "He knows what you did",
+    "Smoll🤏": "Smoll",
+    "Side-Eye": "Side-eye",
+    "Nerd": "Uhm, actually",
+    "Loading...": "Loading",
+    "Hehe": "Hehe",
+    "Night furry": "Night furry",
+    "Meowgiсian": "Meowgitian",
+    "The light of hope": "The light of hope",
+    "Wewewe": "Wewewe",
+    "Espionage Agent": "Espionage Agent",
+    "All in": "All in",
+    "True pain": "True pain",
+    "Wait… What?": "Wait What",
+    "Zoning Out": "Zoning Out",
+    "How dare you?": "How dare you"
 };
 
 function addMessage(message) {
