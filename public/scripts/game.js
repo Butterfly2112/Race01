@@ -66,13 +66,18 @@ const cardNameToImage = (name) => {
     return file ? `/images/${encodeURIComponent(file)}.png` : null;
 };
 
+// Accept response from the server after the 'play-card' event
+socket.on('card-played', (info) => {
+    console.log(info);
+});
+
 const createCard = ({ imagePath, name, id }, i, total) => {
     const card = document.createElement('div');
     card.classList.add('card');
     card.dataset.cardId = id;
     card.addEventListener('click', () => {
         if (isPlayerTurn && roomId) {
-            socket.emit('play-card', { roomId, cardId: id });// Notify the server about the played card
+            socket.emit('play-card', { roomId, card: name });// Notify the server about the played card
         }
     });
 
@@ -204,7 +209,7 @@ function startTimer() {
         if (timeLeft <= 0) {
             stopTimer();
             isPlayerTurn = false;
-            socket.emit('end-turn', roomId); // Notify the server that the turn has ended
+            socket.emit('end-turn', roomId);
         }
     }, 1000);
 }
@@ -215,12 +220,17 @@ function showFullTimer() {
     updateTimerUI(timeLeft);
 }
 
+// Accept response from the server after the 'end-turn' event
+socket.on('next-turn', (info) => {
+    console.log(info);
+});
+
 if (endTurnButton) {
     endTurnButton.addEventListener('click', () => {
         if (isPlayerTurn) {
             stopTimer();
             isPlayerTurn = false;
-            socket.emit('end-turn', roomId); // Notify the server that the turn has ended
+            socket.emit('end-turn', roomId);
         }
     });
 }

@@ -39,6 +39,7 @@ export const gameStarted = async (io, socket, roomID, games) => {
             const [socket1, socket2] = game.sockets;
 
             game.turn = Math.random() < 0.5 ? player1.login : player2.login;
+            game.players.find(p => p.login !== game.turn).mana = 2;
 
             io.to(socket1).emit('draw-cards', {
                 player: player1,
@@ -64,6 +65,33 @@ export const gameStarted = async (io, socket, roomID, games) => {
         });
     }
 };
+
+export const endTurn = (io, socket, roomID, games) => {
+    const game = games[roomID];
+
+    if (socket.user.login === game.turn) {
+        const player = game.players.find(p => p.login === socket.user.login);
+        const opponent = game.players.find(p => p.login !== socket.user.login);
+
+        player.mana = player.mana === 3 ? 3 : ++player.mana;
+
+        game.turn = opponent.login;
+        io.to(roomID).emit('next-turn', { player1: player, player2: opponent, turn: game.turn });
+    }
+}
+
+export const playCard = (io, socket, info, games) => {
+    const game = games[info.roomId];
+    const player = game.players.find(p => p.login === socket.user.login);
+    const opponent = game.players.find(p => p.login !== socket.user.login);
+    const card = player.cards.find(card => card.name === info.card);
+
+    opponent.hp -= card.atk - opponent.def;
+    player.def = card.def;
+    player.cards.splice(player.cards.indexOf(card), 1);
+
+    io.to(info.roomId).emit('card-played', { player1: player, player2: opponent, turn: game.turn });
+}
 
 export const messageSent = (io, socket, roomID, message) => {
     io.to(roomID).emit('broadcast-message', `${socket.user.login}: ${message}`);
