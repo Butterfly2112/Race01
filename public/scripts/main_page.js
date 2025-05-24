@@ -35,11 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (cached) currentProfilePic.src = cached;
       try {
         const res = await fetch('/api/profile_picture')
+
         if (res.ok) {
-          const { url_pfp } = await res.json();
-          if (url_pfp) {
-            currentProfilePic.src = url_pfp;
-            localStorage.setItem('avatarURL', url_pfp);
+            const res_json = await res.json(); // Convert to json
+
+          if (res_json) {
+            currentProfilePic.src = res_json.pfpUrl; // get pfpURL field from an object { pfpUrl }
+            localStorage.setItem('avatarURL', res_json.pfpUrl); // save it to the local storage
           }
         } else if (res.status !== 404) console.warn('Avatar GET status', res.status);
       } catch (err) {
