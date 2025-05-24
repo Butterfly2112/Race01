@@ -136,7 +136,7 @@ function determineFirstTurn(turnLogin, selfLogin) {
         playerIndicator.classList.remove('selected');
         opponentIndicator.classList.remove('selected');
 
-        let steps = 7 + Math.floor(Math.random() * 4);
+        let steps = 7;
         let current = 0;
 
         const animate = () => {
@@ -162,7 +162,7 @@ function determineFirstTurn(turnLogin, selfLogin) {
                 setTimeout(() => {
                     overlay.classList.add('hidden');
                     resolve();
-                }, 3000);
+                }, 1000);
             }
         };
 
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!hasShownFirstTurn) {
-            await determineFirstTurn(info.turn, selfLogin);
+            await startDeciderAnimation(info.turn, selfLogin);
             hasShownFirstTurn = true;
             localStorage.setItem(firstTurnKey, 'true');
         }
@@ -291,6 +291,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         console.error("Chat form or input not found");
+    }
+
+    const deciderMusic = document.getElementById('decider-music');
+    const bgMusic = document.getElementById('bg-music');
+    const soundEmoji = document.getElementById('sound-emoji');
+    const volumeSlider = document.getElementById('volume-slider');
+    let soundEnabled = true;
+
+    async function startDeciderAnimation(turnLogin, selfLogin) {
+        if (soundEnabled && deciderMusic) {
+            bgMusic.pause();
+            deciderMusic.currentTime = 0;
+            deciderMusic.volume = volumeSlider ? parseFloat(volumeSlider.value) : 0.5;
+            deciderMusic.play();
+        }
+        await determineFirstTurn(turnLogin, selfLogin);
+        if (soundEnabled && bgMusic) {
+            deciderMusic.pause();
+            bgMusic.currentTime = 0;
+            bgMusic.volume = volumeSlider ? parseFloat(volumeSlider.value) : 0.5;
+            bgMusic.play();
+        }
+    }
+
+    if (soundEmoji && bgMusic && deciderMusic) {
+        soundEmoji.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            if (soundEnabled) {
+                if (deciderMusic.paused && bgMusic.paused) bgMusic.play();
+                soundEmoji.textContent = '🔊';
+            } else {
+                bgMusic.pause();
+                deciderMusic.pause();
+                soundEmoji.textContent = '🔇';
+            }
+        });
+
+        [bgMusic, deciderMusic].forEach(audio => {
+            audio.volume = volumeSlider ? parseFloat(volumeSlider.value) : 0.5;
+        });
+
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', () => {
+                [bgMusic, deciderMusic].forEach(audio => {
+                    audio.volume = parseFloat(volumeSlider.value);
+                });
+            });
+        }
     }
 });
 

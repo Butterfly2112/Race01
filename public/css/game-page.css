@@ -509,3 +509,59 @@ button:hover {
     color: #ffe066;
     font-weight: bold;
 }
+
+.sound-controls {
+    position:fixed;
+    top:10px;
+    right:60px;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+}
+
+#sound-emoji {
+    user-select: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#volume-slider {
+    appearance: none;
+    width: 100px;
+    height: 6px;
+    background: #ffe066;
+    border-radius: 3px;
+    outline: none;
+    margin-left: 10px;
+    vertical-align: middle;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#volume-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #222;
+    border: 2px solid #ffe066;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #222;
+    border: 2px solid #ffe066;
+    cursor: pointer;
+}
+
+#volume-slider::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #222;
+    border: 2px solid #ffe066;
+    cursor: pointer;
+}

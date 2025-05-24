@@ -101,6 +101,13 @@
         <button id="end-turn-button" class="end-turn-btn" disabled>End Turn</button>
     </div>
 
+    <audio id="decider-music" src="/sounds/decider.mp3"></audio>
+    <audio id="bg-music" src="/sounds/bg_music.mp3" loop></audio>
+    <div class="sound-controls">
+        <span id="sound-emoji">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
+
     <script src="/scripts/game.js" type="module"></script>
 </body>
 </html>
