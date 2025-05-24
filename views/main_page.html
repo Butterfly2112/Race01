@@ -11,22 +11,20 @@
     <div class="main-page-container">
         <header class="main-header">
             <div class="user-profile-info">
-                <img id="current-profile-pic" src="/images/default-avatar.jpg" alt="User Avatar" class="profile-pic-header">
+                <div class="avatar_wrapper" id="avatar_wrapper">
+                    <img id="current-profile-pic" src="/images/default-avatar.jpg" alt="User Avatar" class="profile-pic-header">
+                    <label class="avatar_overlay" for="avatar-file-input">
+                        <span class="avatar_overlay_icon">⟳</span>
+                        <div id="tool_tip"><span id="tool_tip_text">Change avatar</span></div>
+                    </label>
+                    <input type="file" id="avatar-file-input" accept="image/*" hidden>
+                </div>
                 <div class="user-text-details">
                     <span id="user-login-display" class="user-login">loading...</span>
                 </div>
             </div>
             <button id="logout-button" class="button logout-button">Logout</button>
         </header>
-
-        <section class="avatar-selection-section">
-            <h2>Choose Your Avatar:</h2>
-            <div class="avatar-options-container">
-                 <img src="/images/default-avatar.jpg" alt="Avatar Option 0" class="selectable-avatar" data-avatar="/images/default-avatar.jpg">
-                <img src="/images/profile1.png" alt="Avatar Option 1" class="selectable-avatar" data-avatar="/images/profile1.png">
-                <img src="/images/profile2.jpg" alt="Avatar Option 2" class="selectable-avatar" data-avatar="/images/profile2.jpg">
-            </div>
-        </section>
 
         <section class="rules-section">
             <h2 class="rules-title">Game Rules</h2>

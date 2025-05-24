@@ -50,46 +50,60 @@
     background: rgba(15, 15, 15, 0.8);
 }
 
-.main-page-container .avatar-selection-section {
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-}
-
-.main-page-container .avatar-selection-section h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.4em;
-}
-
-.main-page-container .avatar-options-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.main-page-container .selectable-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 12px;
-    object-fit: cover;
+.avatar_wrapper {
+    position: relative;
+    display: inline-block;
     cursor: pointer;
-    border: 3px solid transparent;
-    transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-.main-page-container .selectable-avatar:hover {
-    border-color: #ffbb00;
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255, 191, 0, 0.5);
+.avatar_overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    border-radius: 50%;
+    pointer-events: auto;
+    background: rgb(0, 0, 0, 0.5);
+    transform: scale(.9);
+    transition: opacity .4s ease, transform .4s ease;
+    cursor: pointer;
 }
 
-.main-page-container .selectable-avatar.selected {
-    border-color: #2db7b7;
-    box-shadow: 0 0 15px rgba(51, 255, 252, 0.6);
-    transform: scale(1.03);
+.avatar_overlay_icon {
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+#tool_tip {
+    position: relative;
+    display: inline-block;
+}
+
+#tool_tip_text {
+    visibility: hidden;
+    background: rgb(0, 0, 0, 0.4);
+    position: absolute;
+    color: white;
+    z-index: 1;
+    padding: 5px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+#tool_tip:hover #tool_tip_text {
+    visibility: visible;
+}
+
+#avatar_wrapper:hover #tool_tip_text {
+    visibility: visible;
+}
+
+#avatar_wrapper:hover .avatar_overlay {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .main-page-container .rules-section {
