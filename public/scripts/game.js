@@ -244,13 +244,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('draw-cards', async function handleDrawCards(info) {
-        if (!playerLogin || !opponentLogin || !handContainer) {
+        const playerLoginEl = document.getElementById('player-login');
+        const opponentLoginEl = document.getElementById('opponent-login');
+        const handContainerEl = document.getElementById('player-hand-container');
+
+        if (!playerLoginEl || !opponentLoginEl || !handContainerEl) {
             setTimeout(() => handleDrawCards(info), 100);
             return;
         }
 
-        opponentLogin.textContent = info.opponent.login;
-        playerLogin.textContent = info.player.login;
+        opponentLoginEl.textContent = info.opponent.login;
+        playerLoginEl.textContent = info.player.login;
         renderHand(info.player.cards);
 
         const selfLogin = info.player.login;
