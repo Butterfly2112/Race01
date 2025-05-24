@@ -1,5 +1,6 @@
 import { Deck } from "../models/Deck.js";
 import { Player } from "../models/Player.js";
+import { guests } from "./apiControllers.js";
 
 export const startGame = (io, socket, roomID) => {
     io.to(roomID).emit('redirect-to-game');
@@ -7,6 +8,11 @@ export const startGame = (io, socket, roomID) => {
 
 export const gameStarted = async (io, socket, roomID, games) => {
     socket.join(roomID);
+
+    // Manage guests
+    if (guests.has(socket.user.login)) {
+        guests.set(socket.user.login, socket.id);
+    }
 
     // Check if the game already exists
     // If no - create it with a new deck
@@ -73,6 +79,10 @@ export const endTurn = (io, socket, roomID, games) => {
         const player = game.players.find(p => p.login === socket.user.login);
         const opponent = game.players.find(p => p.login !== socket.user.login);
 
+        const cardSize = 5 - player.cards.length;
+        const newCards = game.deck.getCards(cardSize);
+
+        player.cards = player.cards.concat(newCards);
         player.mana = player.mana === 3 ? 3 : ++player.mana;
 
         game.turn = opponent.login;
@@ -95,4 +105,12 @@ export const playCard = (io, socket, info, games) => {
 
 export const messageSent = (io, socket, roomID, message) => {
     io.to(roomID).emit('broadcast-message', `${socket.user.login}: ${message}`);
+}
+
+export const disconnect = (io, socket) => {
+    setTimeout(() => {
+        if (socket.id === guests.get(socket.user.login)) {
+            guests.delete(socket.user.login);
+        }
+    }, 1000)
 }

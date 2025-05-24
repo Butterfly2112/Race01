@@ -29,7 +29,8 @@ apiRouter.post('/register', upload.none(), apiController.registerUser);
 apiRouter.post('/login', upload.none(), apiController.loginUser);
 apiRouter.post('/remind', upload.none(), apiController.remindPassword);
 apiRouter.post('/profile_picture', authenticate, upload.single('file'), apiController.uploadPFP);
-apiRouter.post('/logout', apiController.logout);
+apiRouter.post('/logout', authenticate, apiController.logout);
+apiRouter.post('/guest-login', upload.none(), apiController.guestLogin);
 
 apiRouter.get('/user/me', authenticate, apiController.getMe);
 apiRouter.get('/profile_picture', authenticate, apiController.getPFP);

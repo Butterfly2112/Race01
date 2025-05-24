@@ -180,7 +180,8 @@ input[type="email"]::placeholder {
     opacity: 1;
 }
 
-button[type="submit"], button, .button {
+button[type="submit"], button, .button,
+input[type="submit"] {
     display: inline-block;
     padding: 15px 40px;
     margin-top: 20px;
@@ -196,7 +197,8 @@ button[type="submit"], button, .button {
     box-sizing: border-box;
 }
 
-button[type="submit"]:hover {
+button[type="submit"]:hover,
+input[type="submit"]:hover {
     background: #000000a5;
     box-shadow: 0 15px 30px rgba(22, 20, 26, 0.8);
     transform: translateY(-3px);
@@ -225,4 +227,30 @@ button#start_the_game:disabled:hover { transform: none; }
 
 .container p a:hover {
     color: #ccc;
+}
+
+#login-here {
+    margin-bottom: 0.5rem;
+}
+
+#or {
+    margin: 0;
+}
+
+#guest {
+    margin-top: 0.5rem;
+}
+
+#guest-login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#submit-guest {
+    margin-top: 0;
+}
+
+#return-to-registration a {
+    color: #fff;
 }

@@ -6,4 +6,5 @@ export const gameHandler = (socket, io, games) => {
     socket.on('end-turn', (roomId) => gameController.endTurn(io, socket, roomId, games));
     socket.on('play-card', (info) => gameController.playCard(io, socket, info, games));
     socket.on('message-sent', (roomId, message) => gameController.messageSent(io, socket, roomId, message));
+    socket.on('disconnect', () => gameController.disconnect(io, socket));
 }

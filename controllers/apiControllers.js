@@ -5,11 +5,17 @@ import { generatePassword, sendEmail } from "../utils.js";
 
 const secret = process.env.JWT_SECRET || 'mystrongsecretkey';
 
-const registerUser = async (req, res) => {
+export const guests = new Map();
+
+export const registerUser = async (req, res) => {
     const { login, password, confirm_pass, fullname, email_address } = req.body;
 
     if (password !== confirm_pass) {
         return res.status(400).json({error: 'Passwords do not match'});
+    }
+
+    if (guests.get(login) !== undefined) {
+        return res.status(400).json({error: 'User already exists'});
     }
 
     try {
@@ -37,7 +43,7 @@ const registerUser = async (req, res) => {
     }
 }
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     const { login, password } = req.body;
 
     try {
@@ -69,7 +75,7 @@ const loginUser = async (req, res) => {
     }
 }
 
-const remindPassword = async (req, res) => {
+export const remindPassword = async (req, res) => {
     const { email } = req.body;
 
     try {
@@ -98,21 +104,23 @@ const remindPassword = async (req, res) => {
     }
 }
 
-const logout = (req, res) => {
+export const logout = (req, res) => {
+    const { login } = req.login;
+
+    if (guests.get(login) !== undefined) {
+        guests.delete(login);
+    }
+
     res.clearCookie('token');
     res.status(200).send();
 }
 
-const getMe = (req, res) => {
-    if (req.login && req.login.login) {
-        res.json({ login: req.login.login });
-    }
-    else {
-        res.status(401).json({ error: 'Not authenticated or user data missing' });
-    }
+export const getMe = (req, res) => {
+    const { login } = req.login;
+    res.json({ login: login });
 }
 
-const uploadPFP = async (req, res) => {
+export const uploadPFP = async (req, res) => {
     const { login } = req.login;
     const file = req.file;
 
@@ -125,7 +133,7 @@ const uploadPFP = async (req, res) => {
     }
 }
 
-const getPFP = async (req, res) => {
+export const getPFP = async (req, res) => {
     const { login } = req.login;
 
     try {
@@ -137,4 +145,33 @@ const getPFP = async (req, res) => {
     }
 }
 
-export { registerUser, loginUser, remindPassword, logout, getMe, uploadPFP, getPFP };
+export const guestLogin = async (req, res) => {
+    const { login } = req.body;
+
+    try {
+        const response = await User.find(login);
+
+        if (guests.get(login) !== undefined) {
+            return res.status(200).send({error: 'This account already exists'});
+        }
+
+        if (response.error_code === 'USER_NOT_FOUND') {
+            const token = jwt.sign({ login }, secret, {expiresIn: '1h'});
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: false,
+                maxAge: 3600000
+            });
+
+            guests.set(login, '');
+            res.status(200).json({success: true});
+        }
+        else {
+            res.status(200).json({error: 'This account already exists'});
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+}

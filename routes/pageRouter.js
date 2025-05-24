@@ -37,4 +37,8 @@ pageRouter.get('/game', authenticate, (req, res) => {
     res.sendFile(path.join(__dirname, '/views/game-page.html'));
 });
 
+pageRouter.get('/guest-login', redirectToMainPage, (req, res) => {
+    res.sendFile(path.join(__dirname, '/views/guest-login.html'));
+});
+
 export default pageRouter;
