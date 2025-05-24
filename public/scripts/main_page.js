@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logout-button');
     const currentProfilePic = document.getElementById('current-profile-pic');
     const userLoginDisplay = document.getElementById('user-login-display');
-    const selectableAvatars = document.querySelectorAll('.selectable-avatar');
+    const avatarImageInput = document.getElementById('avatar-file-input');
 
     async function fetchAndDisplayUserLogin() {
         try {
@@ -26,30 +26,60 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching user data:', error);
             userLoginDisplay.textContent = "Error";
         }
-
-        const savedAvatar = localStorage.getItem('selectedAvatar');
-        if (savedAvatar) {
-            currentProfilePic.src = savedAvatar;
-        } else {
-            currentProfilePic.src = '/images/default-avatar.jpg';
-        }
-
-        selectableAvatars.forEach(avatarImg => {
-            const currentAvatarFullSrc = new URL(currentProfilePic.src, window.location.origin).pathname;
-            avatarImg.classList.toggle('selected', avatarImg.dataset.avatar === currentAvatarFullSrc || avatarImg.dataset.avatar === currentProfilePic.src);
-        });
     }
 
     fetchAndDisplayUserLogin();
 
-    selectableAvatars.forEach(avatar => {
-        avatar.addEventListener('click', () => {
-            const newAvatarSrc = avatar.dataset.avatar;
-            currentProfilePic.src = newAvatarSrc;
-            localStorage.setItem('selectedAvatar', newAvatarSrc);
-            selectableAvatars.forEach(av => av.classList.remove('selected'));
-            avatar.classList.add('selected');
+    async function fetchAndDisplayUserAvatar() {
+      const cached = localStorage.getItem('avatarURL');
+      if (cached) currentProfilePic.src = cached;
+      try {
+        const res = await fetch('/api/profile_picture')
+        if (res.ok) {
+          const { url_pfp } = await res.json();
+          if (url_pfp) {
+            currentProfilePic.src = url_pfp;
+            localStorage.setItem('avatarURL', url_pfp);
+          }
+        } else if (res.status !== 404) console.warn('Avatar GET status', res.status);
+      } catch (err) {
+        console.error('Failed to fetch avatar: ', err);
+      }
+    }
+
+    fetchAndDisplayUserAvatar();
+
+    avatarImageInput.addEventListener('change', async () => {
+      const file = avatarImageInput.files[0];
+      if (!file) return;
+
+      try {
+        if (!file.type.startsWith('image/')) {
+          alert('Wrong image type');
+          return;
+        }
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch('/api/profile_picture', {
+          method: 'POST',
+          body: fd,
+          credentials: 'include'
         });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        let url;
+        if (res.headers.get('content-type')?.includes('application/json')) {
+          ({ url_pfp: url } = await res.json());
+        } else url = URL.createObjectURL(file);
+        
+        currentProfilePic.src = url;
+        localStorage.setItem('avatarURL', url);
+      } catch (err) {
+        console.error('Failed to upload avatar: ', err);
+        alert('Failed to upload avatar. Try again');
+      } finally {
+        avatarImageInput.value = '';
+      }
     });
 
     if (logoutButton) {
