@@ -37,52 +37,69 @@
         </form>
     </div>
 
-<div class="opponent-zone-container">
-    <div class="player-info opponent-info">
-        <img id="opponent-avatar" src="/images/default-avatar.jpg" alt="Opponent Avatar" class="avatar">
-        <div class="player-details">
-            <span id="opponent-login" class="player-login">Opponent</span>
-            <div class="hp-bar-container">
-                <div id="opponent-hp-bar" class="hp-bar">
-                    <span id="opponent-hp-text" class="hp-text">20/20 HP</span>
+    <div class="opponent-zone-container">
+        <div class="player-info opponent-info">
+            <img id="opponent-avatar" src="/images/default-avatar.jpg" alt="Opponent Avatar" class="avatar">
+            <div class="player-details">
+                <span id="opponent-login" class="player-login">Opponent</span>
+                <div class="hp-bar-container">
+                    <div id="opponent-hp-bar" class="hp-bar">
+                        <span id="opponent-hp-text" class="hp-text">20/20 HP</span>
+                    </div>
+                </div>
+                <div class="mana-bar-container">
+                    <span class="mana-star">
+                        <svg viewBox="0 0 32 32" class="mana-star-svg">
+                            <polygon points="16,2 20,12 31,12 22,19 25,30 16,23 7,30 10,19 1,12 12,12"
+                                fill="#ffe066" stroke="#fff176" stroke-width="2"/>
+                        </svg>
+                        <span id="opponent-mana-text" class="mana-text">0</span>/<span id="opponent-max-mana-text" class="mana-text">3</span>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+    <div id="opponent-cards-top-center" class="face-down-cards-area">
+        <div class="face-down-card"></div>
+        <div class="face-down-card"></div>
+        <div class="face-down-card"></div>
+        <div class="face-down-card"></div>
+        <div class="face-down-card"></div>
+    </div>
 
-<div id="opponent-cards-top-center" class="face-down-cards-area">
-    <div class="face-down-card"></div>
-    <div class="face-down-card"></div>
-    <div class="face-down-card"></div>
-    <div class="face-down-card"></div>
-    <div class="face-down-card"></div>
-</div>
-
-<div id="player-hand-container" class="player-hand"></div>
-<div class="player-controls-area">
-    <div class="player-info self-player-info">
-        <img id="player-avatar" src="/images/default-avatar.jpg" alt="Player Avatar" class="avatar">
-        <div class="player-details">
-            <span id="player-login" class="player-login">You</span>
-            <div class="hp-bar-container">
-                <div id="player-hp-bar" class="hp-bar player-hp-color">
-                    <span id="player-hp-text" class="hp-text">20/20 HP</span>
+    <div id="player-hand-container" class="player-hand"></div>
+    <div class="player-controls-area">
+        <div class="player-info self-player-info">
+            <img id="player-avatar" src="/images/default-avatar.jpg" alt="Player Avatar" class="avatar">
+            <div class="player-details">
+                <span id="player-login" class="player-login">You</span>
+                <div class="hp-bar-container">
+                    <div id="player-hp-bar" class="hp-bar player-hp-color">
+                        <span id="player-hp-text" class="hp-text">20/20 HP</span>
+                    </div>
+                </div>
+                <div class="mana-bar-container">
+                    <span class="mana-star">
+                        <svg viewBox="0 0 32 32" class="mana-star-svg">
+                            <polygon points="16,2 20,12 31,12 22,19 25,30 16,23 7,30 10,19 1,12 12,12"
+                                fill="#ffe066" stroke="#fff176" stroke-width="2"/>
+                        </svg>
+                        <span id="player-mana-text" class="mana-text">0</span>/<span id="player-max-mana-text" class="mana-text">3</span>
+                    </span>
                 </div>
             </div>
+
         </div>
     </div>
-    <div class="player-actions-bar self-player-actions">
-        <div id="timer-display-text-container">
-            <p> Time: <span id="timer-seconds-text">30</span>s </p>
-        </div>
-        <div class="timer-progress-bar-container">
+
+    <div class="turn-timer">
+        <span id="timer-seconds-text">30</span>s
+        <div id="timer-progress-bar">
             <div id="timer-progress-bar-fill"></div>
         </div>
-        <button id="end-turn-button" class="button" disabled>End Turn</button>
+        <button id="end-turn-button" class="end-turn-btn" disabled>End Turn</button>
     </div>
-</div>
 
     <script src="/scripts/game.js" type="module"></script>
 </body>

@@ -53,6 +53,14 @@ function addMessage(message) {
     chatMessages.prepend(p);
 }
 
+function addSystemMessage(message) {
+    if (!chatMessages) return;
+    const p = document.createElement('p');
+    p.textContent = message;
+    p.className = 'system-message';
+    chatMessages.prepend(p);
+}
+
 const cardNameToImage = (name) => {
     const file = nameToFile[name?.trim()];
     return file ? `/images/${encodeURIComponent(file)}.png` : null;
@@ -115,47 +123,51 @@ const renderHand = (cards = []) => {
 };
 
 function determineFirstTurn(turnLogin, selfLogin) {
-    const overlay = document.getElementById('turn-decider-overlay');
-    const orb = document.getElementById('selector-orb');
-    const resultText = document.getElementById('turn-decider-result-text');
-    const playerIndicator = document.querySelector('.player-indicator.self');
-    const opponentIndicator = document.querySelector('.player-indicator.opponent');
+    return new Promise((resolve) => {
+        const overlay = document.getElementById('turn-decider-overlay');
+        const orb = document.getElementById('selector-orb');
+        const resultText = document.getElementById('turn-decider-result-text');
+        const playerIndicator = document.querySelector('.player-indicator.self');
+        const opponentIndicator = document.querySelector('.player-indicator.opponent');
 
-    overlay.classList.remove('hidden');
-    orb.classList.add('animating');
-    resultText.textContent = '';
-    playerIndicator.classList.remove('selected');
-    opponentIndicator.classList.remove('selected');
+        overlay.classList.remove('hidden');
+        orb.classList.add('animating');
+        resultText.textContent = '';
+        playerIndicator.classList.remove('selected');
+        opponentIndicator.classList.remove('selected');
 
-    let steps = 7 + Math.floor(Math.random() * 4);
-    let current = 0;
+        let steps = 7 + Math.floor(Math.random() * 4);
+        let current = 0;
 
-    const animate = () => {
-        const isPlayer = current % 2 === 0;
-        orb.style.left = isPlayer ? '0%' : '100%';
-        current++;
+        const animate = () => {
+            const isPlayer = current % 2 === 0;
+            orb.style.left = isPlayer ? '0%' : '100%';
+            current++;
 
-        if (current <= steps) {
-            setTimeout(animate, 300);
-        } else {
-            orb.classList.remove('animating');
-
-            const winnerIsPlayer = turnLogin === selfLogin;
-            orb.style.left = winnerIsPlayer ? '0%' : '100%';
-
-            if (winnerIsPlayer) {
-                resultText.textContent = 'You go first!';
-                playerIndicator.classList.add('selected');
+            if (current <= steps) {
+                setTimeout(animate, 300);
             } else {
-                resultText.textContent = 'Opponent goes first!';
-                opponentIndicator.classList.add('selected');
+                orb.classList.remove('animating');
+                const winnerIsPlayer = turnLogin === selfLogin;
+                orb.style.left = winnerIsPlayer ? '0%' : '100%';
+
+                if (winnerIsPlayer) {
+                    resultText.textContent = 'You go first!';
+                    playerIndicator.classList.add('selected');
+                } else {
+                    resultText.textContent = 'Opponent goes first!';
+                    opponentIndicator.classList.add('selected');
+                }
+
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    resolve();
+                }, 3000);
             }
+        };
 
-            setTimeout(() => overlay.classList.add('hidden'), 3000);
-        }
-    };
-
-    setTimeout(animate, 500);
+        setTimeout(animate, 500);
+    });
 }
 
 let timerInterval;
@@ -222,26 +234,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const firstTurnKey = `hasShownFirstTurn_${roomId}`;
+    let hasShownFirstTurn = localStorage.getItem(firstTurnKey) === 'true';
+
     socket.emit('game-started', roomId);
 
     socket.on('broadcast-message', (message) => {
         addMessage(message);
     });
 
-    let hasShownFirstTurn = sessionStorage.getItem('hasShownFirstTurn') === 'true';
-
-    socket.on('draw-cards', (info) => {
+    socket.on('draw-cards', async (info) => {
         opponentLogin.textContent = info.opponent.login;
         playerLogin.textContent = info.player.login;
         renderHand(info.player.cards);
 
         const selfLogin = info.player.login;
 
-        if (!hasShownFirstTurn) {
-            determineFirstTurn(info.turn, selfLogin);
-            hasShownFirstTurn = true;
-            sessionStorage.setItem('hasShownFirstTurn', 'true');
+        if (info.turn === selfLogin) {
+            addSystemMessage("It's your turn!");
+        } else {
+            addSystemMessage(`It's ${info.opponent.login}'s turn.`);
         }
+
+        if (!hasShownFirstTurn) {
+            await determineFirstTurn(info.turn, selfLogin);
+            hasShownFirstTurn = true;
+            localStorage.setItem(firstTurnKey, 'true');
+        }
+
         if (info.turn === selfLogin) {
             isPlayerTurn = true;
             startTimer();
@@ -249,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isPlayerTurn = false;
             showFullTimer();
         }
-
     });
 
     if (chatForm && chatInput) {

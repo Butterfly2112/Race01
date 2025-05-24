@@ -274,10 +274,18 @@ button:hover {
     margin-bottom: 5px;
 }
 
+#timer-progress-bar {
+    width: 100px;
+    height: 8px;
+    background: #444;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
 #timer-progress-bar-fill {
     height: 100%;
+    background: linear-gradient(90deg, #fada38, #fbf197);
     width: 100%;
-    background: linear-gradient(90deg, #f8cd4b 60%, #fdeda5 100%);
     transition: width 0.3s;
 }
 
@@ -289,6 +297,45 @@ button:hover {
     background-color: #535555;
     color: #bdc3c7;
     cursor: not-allowed;
+}
+
+.turn-timer {
+    position: fixed;
+    right: 0;
+    bottom: 52%;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+    background: none;
+    padding: 6px 10px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.end-turn-btn {
+    padding: 4px 12px;
+    font-size: 1em;
+    border-radius: 6px;
+    background: #ffe066;
+    color: #222;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, opacity 0.2s;
+    min-width: 70px;
+    height: 32px;
+}
+
+#end-turn-button:disabled, .end-turn-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #ccc;
+    color: #888;
 }
 
 .turn-decider-overlay {
@@ -426,4 +473,39 @@ button:hover {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+
+.mana-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.mana-star {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-right: 4px;
+    position: relative;
+}
+
+.mana-star-svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+    filter: drop-shadow(0 0 6px #ffe066) drop-shadow(0 0 2px #fff176);
+}
+
+.mana-star .mana-text {
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 3px #a259ff, 0 0 1px #fff;
+    margin-left: 2px;
+}
+
+.system-message {
+    color: #ffe066;
+    font-weight: bold;
 }
