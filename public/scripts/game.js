@@ -243,7 +243,12 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(message);
     });
 
-    socket.on('draw-cards', async (info) => {
+    socket.on('draw-cards', async function handleDrawCards(info) {
+        if (!playerLogin || !opponentLogin || !handContainer) {
+            setTimeout(() => handleDrawCards(info), 100);
+            return;
+        }
+
         opponentLogin.textContent = info.opponent.login;
         playerLogin.textContent = info.player.login;
         renderHand(info.player.cards);
