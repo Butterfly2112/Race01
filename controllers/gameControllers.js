@@ -86,7 +86,7 @@ export const playCard = (io, socket, info, games) => {
     const opponent = game.players.find(p => p.login !== socket.user.login);
     const card = player.cards.find(card => card.name === info.card);
 
-    opponent.hp -= card.atk - opponent.def;
+    opponent.hp -= Math.max(0, card.atk - opponent.def);
     player.def = card.def;
     player.cards.splice(player.cards.indexOf(card), 1);
 
