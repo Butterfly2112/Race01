@@ -125,7 +125,7 @@ const createCard = ({ imagePath, name, id, cost }, i, total) => {
         const mana = Number(document.getElementById('player-mana-text').textContent);
         if (mana < cost) {
             card.classList.add('disabled');
-            card.style.opacity = '0.5';
+            card.style.filter = 'brightness(0.5)';
             card.style.pointerEvents = 'none';
         }
     }
@@ -310,7 +310,7 @@ function updateFromInfo(info, shouldUpdateTimer = false) {
     document.getElementById('player-def-text').textContent = me.def ?? 0;
     document.getElementById('opponent-def-text').textContent = opponent.def ?? 0;
     renderHand(me.cards);
-    renderOpponentCards(opponent.cards.length);
+    renderOpponentCards(opponent.cards ? opponent.cards.length : 0);
 
     const playerAvatar = document.getElementById('player-avatar');
     const opponentAvatar = document.getElementById('opponent-avatar');
