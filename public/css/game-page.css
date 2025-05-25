@@ -103,13 +103,23 @@ button:hover {
 }
 
 #opponent-cards-top-center {
-    position: absolute;
+    position: relative;
     top: 20px;
-    left: 50%;
+    left: 47%;
     transform: translateX(-50%);
     display: flex;
     gap: 8px;
     z-index: 5;
+}
+
+.face-down-card {
+    width: 80px;
+    height: 110px;
+    background-image: url('/images/Back_of_card.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px;
+    box-shadow: 3px 5px rgba(0,0,0,0.3);
 }
 
 .player-info {
@@ -181,21 +191,6 @@ button:hover {
     right: 0;
     text-align: center;
     line-height: 22px;
-}
-
-.face-down-cards-area {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.face-down-card {
-    width: 50px;
-    height: 75px;
-    background-color: #3d2e24;
-    border: 2px solid #604e3f;
-    border-radius: 5px;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
 }
 
 .player-hand {

@@ -101,11 +101,8 @@ const createCard = ({ imagePath, name, id, cost }, i, total) => {
             backgroundRepeat: 'no-repeat'
         });
     } else {
-        const fallback = document.createElement('p');
-        fallback.textContent = name || 'Unknown Card';
-        fallback.className = 'card-name-fallback';
-        card.appendChild(fallback);
-        card.style.backgroundColor = '#777';
+        card.className = 'face-down-card';
+        card.style.backgroundImage = "url('/images/Back_of_card.png')";
     }
 
     const angle = total > 1 ? (-12 + (i * 24) / (total - 1)) : 0;
@@ -147,6 +144,40 @@ const renderHand = (cards = []) => {
     handContainer.innerHTML = '';
     playerState.hand.forEach((c, i) => handContainer.appendChild(createCard(c, i, playerState.hand.length)));
 };
+
+function renderOpponentCards(count) {
+    const container = document.getElementById('opponent-cards-top-center');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const card = document.createElement('div');
+        card.className = 'face-down-card';
+        card.style.backgroundImage = "url('/images/Back_of_card.png')";
+        card.style.backgroundSize = 'contain';
+        card.style.backgroundPosition = 'center';
+        card.style.backgroundRepeat = 'no-repeat';
+
+        const angle = count > 1 ? (-12 + (i * 24) / (count - 1)) : 0;
+        const mid = (count - 1) / 2;
+        const dy = count > 1 ? 20 * Math.pow(Math.abs(i - mid) / mid, 1.8) * Math.min(1, count / 4) : 0;
+        const cardWidthForCalc = 80;
+        const xSpacingFactor = 0.7;
+        const overlap = cardWidthForCalc * xSpacingFactor;
+        const totalHandVisualWidth = (count - 1) * overlap + cardWidthForCalc;
+        const startX = -totalHandVisualWidth / 2 + cardWidthForCalc / 2;
+        const dx = startX + i * overlap;
+
+        Object.assign(card.style, {
+            position: 'absolute',
+            left: '50%',
+            top: '0',
+            transform: `translateX(${dx}px) translateY(${dy}px) rotate(${angle}deg)`,
+            zIndex: i
+        });
+
+        container.appendChild(card);
+    }
+}
 
 function determineFirstTurn(turnLogin, selfLogin) {
     return new Promise(resolve => {
@@ -279,6 +310,7 @@ function updateFromInfo(info, shouldUpdateTimer = false) {
     document.getElementById('player-def-text').textContent = me.def ?? 0;
     document.getElementById('opponent-def-text').textContent = opponent.def ?? 0;
     renderHand(me.cards);
+    renderOpponentCards(opponent.cards.length);
 
     const playerAvatar = document.getElementById('player-avatar');
     const opponentAvatar = document.getElementById('opponent-avatar');
@@ -435,6 +467,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+    renderOpponentCards(5);
 });
 
 window.addEventListener('beforeunload', () => {
