@@ -615,13 +615,13 @@ button:hover {
 }
 
 .game-over-content {
-    background: #ae8bc1;
+    background: #cbfbff;
     border-radius: 12px;
     padding: 40px 30px;
     text-align: center;
     box-shadow:
-        0 0 32px 8px #7354b3,
-        0 0 12px 4px #b676ff;
+        0 0 32px 8px #4ed6ff,
+        0 0 12px 4px #8fe3ff;
     width: 400px;
     min-height: 380px;
     box-sizing: border-box;
@@ -638,12 +638,11 @@ button:hover {
 }
 
 #game-over-exit {
-    color: #fff;
-    background-color: #30233b;
+    background-color: rgb(50, 208, 236);
+    padding: 10px 20px;
     border-style: none;
 }
 
 #game-over-exit:hover {
-    color: #fff;
-    background-color: #000000;
+    background-color: rgb(21, 165, 187);
 }
