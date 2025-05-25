@@ -25,7 +25,8 @@ export const gameStarted = async (io, socket, roomID, games) => {
             players: [],
             sockets: [],
             deck: deck,
-            turn: ''
+            turn: '',
+            turnCount: 1
         };
     }
 
@@ -49,13 +50,13 @@ export const gameStarted = async (io, socket, roomID, games) => {
 
             io.to(socket1).emit('draw-cards', {
                 player: player1,
-                opponent: { login: player2.login, hp: player2.hp },
+                opponent: { login: player2.login, hp: player2.hp, def: player2.def, mana: player2.mana},
                 turn: game.turn
             });
 
             io.to(socket2).emit('draw-cards', {
                 player: player2,
-                opponent: { login: player1.login, hp: player1.hp },
+                opponent: { login: player1.login, hp: player1.hp, def: player1.def, mana: player1.mana },
                 turn: game.turn
             });
         }
@@ -72,21 +73,29 @@ export const gameStarted = async (io, socket, roomID, games) => {
     }
 };
 
-export const endTurn = (io, socket, roomID, games) => {
+export const endTurn = async (io, socket, roomID, games) => {
     const game = games[roomID];
 
     if (socket.user.login === game.turn) {
         const player = game.players.find(p => p.login === socket.user.login);
         const opponent = game.players.find(p => p.login !== socket.user.login);
 
+        if (game.deck.size <= 0) {
+            await game.deck.resetDeck();
+        }
+
         const cardSize = 5 - player.cards.length;
         const newCards = game.deck.getCards(cardSize);
 
         player.cards = player.cards.concat(newCards);
-        player.mana = player.mana === 3 ? 3 : ++player.mana;
+        if (game.turnCount === 1) player.mana = 2;
+        if (game.turnCount >= 2) player.mana = 3;
+        opponent.def = 0;
+
+        game.turnCount++;
 
         game.turn = opponent.login;
-        io.to(roomID).emit('next-turn', { player1: player, player2: opponent, turn: game.turn });
+        io.to(roomID).emit('next-turn', {player1: player, player2: opponent, turn: game.turn});
     }
 }
 
@@ -96,12 +105,29 @@ export const playCard = (io, socket, info, games) => {
     const opponent = game.players.find(p => p.login !== socket.user.login);
     const card = player.cards.find(card => card.name === info.card);
 
-    // Check if the card exists and if the player has enough mana to play it
     if (!card || player.mana < card.cost) return;
-    // Subtract the mana cost of the card from the player's mana
     player.mana -= card.cost;
 
-    opponent.hp -= Math.max(0, card.atk - opponent.def);
+    let remainingAtk = card.atk;
+
+    if (opponent.def > 0) {
+        if (remainingAtk >= opponent.def) {
+            remainingAtk -= opponent.def;
+            opponent.def = 0;
+        } else {
+            opponent.def -= remainingAtk;
+            remainingAtk = 0;
+        }
+    }
+
+    if (remainingAtk > 0) {
+        opponent.hp -= remainingAtk;
+    }
+
+    if (opponent.hp <= 0) {
+        io.to(info.roomId).emit('game-ended', { winner: player, loser: opponent, turns: game.turnCount });
+    }
+
     player.def = card.def;
     player.cards.splice(player.cards.indexOf(card), 1);
 
