@@ -5,6 +5,7 @@ const socket = io('http://localhost:3000');
 document.addEventListener('DOMContentLoaded', () => {
     const roomIdDisplay = document.getElementById('room-id-display');
     const roomMessage = document.getElementById('room-message');
+    const checkbox = document.getElementById('checkbox');
     const urlParams = new URLSearchParams(window.location.search);
     const button = document.querySelector('button');
     const roomId = urlParams.get('roomId');
@@ -12,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (roomId) {
         roomIdDisplay.textContent = `Room ID: ${roomId}`;
         roomMessage.textContent = 'Waiting for your opponent to join...';
+
+        checkbox.addEventListener('change', () => {
+            socket.emit('random-room', roomId, checkbox.checked);
+        });
 
         socket.on('user-left-room', () => {
             roomMessage.textContent = 'Your opponent has left the room, waiting for a new one...';
@@ -39,6 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('redirect-to-game', () => {
         window.location.href = `/game?roomId=${roomId}`;
+    });
+
+    socket.on('random-player-joined', (opponent) => {
+        roomMessage.textContent = `Your opponent is ${opponent}`;
     });
 });
 

@@ -1,6 +1,7 @@
 import { Deck } from "../models/Deck.js";
 import { Player } from "../models/Player.js";
 import { guests } from "./apiControllers.js";
+import { randomRooms } from "./socketConnectionControllers.js";
 
 export const startGame = (io, socket, roomID) => {
     io.to(roomID).emit('redirect-to-game');
@@ -142,6 +143,11 @@ export const disconnect = (io, socket) => {
     setTimeout(() => {
         if (socket.id === guests.get(socket.user.login)) {
             guests.delete(socket.user.login);
+        }
+
+        const index = randomRooms.findIndex(room => room.host === socket.user.login);
+        if (index !== -1) {
+            randomRooms.splice(index, 1);
         }
     }, 1000)
 }

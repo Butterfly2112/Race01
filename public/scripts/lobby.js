@@ -5,6 +5,7 @@ const socket = io('http://localhost:3000');
 document.addEventListener('DOMContentLoaded', () => {
     const createRoomButton = document.getElementById('create-room-button');
     const joinRoomButton = document.getElementById('join-room-button');
+    const joinRandomRoom = document.getElementById('join-random-room');
     const roomIdInput = document.getElementById('room-id');
     const messageDiv = document.getElementById('lobby-message');
 
@@ -38,6 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageDiv.className = 'error';
                 }
             }
+        });
+    }
+
+    if (joinRandomRoom) {
+        joinRandomRoom.addEventListener('click', () => {
+            socket.emit('join-random-room');
+        });
+
+        socket.on('join-random-game', (message) => {
+            messageDiv.textContent = message;
+        });
+
+        socket.on('redirect-to-random-game', (roomId) => {
+            window.location.href = `/room?roomId=${roomId}`;
         });
     }
 });

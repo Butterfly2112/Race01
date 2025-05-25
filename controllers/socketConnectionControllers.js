@@ -1,3 +1,5 @@
+export const randomRooms = [];
+
 const createRoom = (socket, roomID, hosts) => {
     socket.join(roomID);
     hosts.set(roomID, socket.user.login);
@@ -63,4 +65,34 @@ const connectToRoom = (io, socket, roomID, hosts) => {
     }
 }
 
-export { createRoom, joinedRoom, connectToRoom };
+const joinRandomRoom = (io, socket) => {
+    if (randomRooms.length === 0) {
+        io.to(socket.id).emit('join-random-game', 'No rooms found');
+    }
+    else {
+        const roomInfo = randomRooms[0];
+        const room = io.sockets.adapter.rooms.get(roomInfo.roomID);
+        const roomSize = room ? room.size : 0;
+
+        if (roomSize >= 2) {
+            io.to(socket.id).emit('join-random-game', 'No rooms found');
+            return;
+        }
+
+        io.to(socket.id).emit('join-random-game');
+        socket.join(roomInfo.roomID);
+        io.to(socket.id).emit('redirect-to-random-game', roomInfo.roomID);
+        io.to(roomInfo.hostSocket.id).emit('random-player-joined', socket.user.login);
+    }
+}
+
+const randomRoom = (io, socket, roomID, state) => {
+    if (state) {
+        randomRooms.push( {roomID, host: socket.user.login, hostSocket: socket } );
+    }
+    else {
+        randomRooms.shift();
+    }
+}
+
+export { createRoom, joinedRoom, connectToRoom, joinRandomRoom, randomRoom };
