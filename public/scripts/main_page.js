@@ -34,18 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem('avatarURL');
       if (cached) currentProfilePic.src = cached;
       try {
-        const res = await fetch('/api/profile_picture')
+        const res = await fetch('/api/profile_picture');
 
         if (res.ok) {
-            const res_json = await res.json(); // Convert to json
+            const res_json = await res.json();
 
           if (res_json) {
-            currentProfilePic.src = res_json.pfpUrl; // get pfpURL field from an object { pfpUrl }
-            localStorage.setItem('avatarURL', res_json.pfpUrl); // save it to the local storage
-          }
-        } else if (res.status !== 404) console.warn('Avatar GET status', res.status);
+            currentProfilePic.src = res_json.pfpUrl;
+            localStorage.setItem('avatarURL', res_json.pfpUrl);
+          } else currentProfilePic.src = "/uploads/default.png";
+        } else if (res.status !== 404) {
+          console.warn('Avatar GET status', res.status);
+          currentProfilePic.src = "/uploads/default.png";
+        }
       } catch (err) {
         console.error('Failed to fetch avatar: ', err);
+        currentProfilePic.src = "/uploads/default.png";
       }
     }
 
