@@ -37,15 +37,15 @@
   },
   {
     "name": "HAHAHFIUSEJHIOHDS",
-    "atk": 3,
-    "def": 3,
+    "atk": 7,
+    "def": 0,
     "cost": 3
   },
   {
     "name": "Sniffer",
-    "atk": 7,
-    "def": 0,
-    "cost": 3
+    "atk": 2,
+    "def": 2,
+    "cost": 2
   },
   {
     "name": "Absolute Cinema",

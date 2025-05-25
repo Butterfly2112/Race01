@@ -386,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('broadcast-message', addMessage);
 
     socket.on('draw-cards', async function handleDrawCards(info) {
+        console.log(info);
         const playerLoginEl = document.getElementById('player-login');
         const opponentLoginEl = document.getElementById('opponent-login');
         const handContainerEl = document.getElementById('player-hand-container');
@@ -469,6 +470,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     renderOpponentCards(5);
+});
+
+socket.on('game-ended', (info) => {
+    console.log(info);
 });
 
 window.addEventListener('beforeunload', () => {
