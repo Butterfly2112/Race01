@@ -8,10 +8,25 @@ const chatInput = document.getElementById('chat-input');
 const handContainer = document.getElementById('player-hand-container');
 const playerLogin = document.getElementById('player-login');
 const opponentLogin = document.getElementById('opponent-login');
+const timerSecondsText = document.getElementById('timer-seconds-text');
+const progressFill = document.getElementById('timer-progress-bar-fill');
+const endTurnButton = document.getElementById('end-turn-button');
+const deciderMusic = document.getElementById('decider-music');
+const bgMusic = document.getElementById('bg-music');
+const soundEmoji = document.getElementById('sound-emoji');
+const volumeSlider = document.getElementById('volume-slider');
+
+const PLAYER_MAX_HP = 20;
+const OPPONENT_MAX_HP = 20;
+const TURN_DURATION = 30;
 
 let playerState = { hand: [] };
 let roomId = '';
 let isPlayerTurn = false;
+let timerInterval;
+let turnStartTime = null;
+let soundEnabled = true;
+let cardPlayedThisTurn = false;
 
 const nameToFile = {
     "😡😡😡": "Angry_cat",
@@ -46,6 +61,11 @@ const nameToFile = {
     "How dare you?": "How dare you"
 };
 
+const cardNameToImage = name => {
+    const file = nameToFile[name?.trim()];
+    return file ? `/images/${encodeURIComponent(file)}.png` : null;
+};
+
 function addMessage(message) {
     if (!chatMessages) return;
     const p = document.createElement('p');
@@ -61,23 +81,15 @@ function addSystemMessage(message) {
     chatMessages.prepend(p);
 }
 
-const cardNameToImage = (name) => {
-    const file = nameToFile[name?.trim()];
-    return file ? `/images/${encodeURIComponent(file)}.png` : null;
-};
-
-// Accept response from the server after the 'play-card' event
-socket.on('card-played', (info) => {
-    console.log(info);
-});
-
-const createCard = ({ imagePath, name, id }, i, total) => {
+const createCard = ({ imagePath, name, id, cost }, i, total) => {
     const card = document.createElement('div');
     card.classList.add('card');
     card.dataset.cardId = id;
     card.addEventListener('click', () => {
-        if (isPlayerTurn && roomId) {
-            socket.emit('play-card', { roomId, card: name });// Notify the server about the played card
+        const mana = Number(document.getElementById('player-mana-text').textContent);
+        if (isPlayerTurn && roomId && mana >= (cost ?? 1)) {
+            socket.emit('play-card', { roomId, card: name });
+            cardPlayedThisTurn = true;
         }
     });
 
@@ -112,6 +124,15 @@ const createCard = ({ imagePath, name, id }, i, total) => {
         position: 'absolute'
     });
 
+    if (typeof cost === 'number') {
+        const mana = Number(document.getElementById('player-mana-text').textContent);
+        if (mana < cost) {
+            card.classList.add('disabled');
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+        }
+    }
+
     return card;
 };
 
@@ -128,7 +149,7 @@ const renderHand = (cards = []) => {
 };
 
 function determineFirstTurn(turnLogin, selfLogin) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const overlay = document.getElementById('turn-decider-overlay');
         const orb = document.getElementById('selector-orb');
         const resultText = document.getElementById('turn-decider-result-text');
@@ -148,14 +169,12 @@ function determineFirstTurn(turnLogin, selfLogin) {
             const isPlayer = current % 2 === 0;
             orb.style.left = isPlayer ? '0%' : '100%';
             current++;
-
             if (current <= steps) {
                 setTimeout(animate, 300);
             } else {
                 orb.classList.remove('animating');
                 const winnerIsPlayer = turnLogin === selfLogin;
                 orb.style.left = winnerIsPlayer ? '0%' : '100%';
-
                 if (winnerIsPlayer) {
                     resultText.textContent = 'You go first!';
                     playerIndicator.classList.add('selected');
@@ -163,28 +182,19 @@ function determineFirstTurn(turnLogin, selfLogin) {
                     resultText.textContent = 'Opponent goes first!';
                     opponentIndicator.classList.add('selected');
                 }
-
                 setTimeout(() => {
                     overlay.classList.add('hidden');
                     resolve();
                 }, 1000);
             }
         };
-
         setTimeout(animate, 500);
     });
 }
 
-let timerInterval;
-let timeLeft = 30;
-
-const timerSecondsText = document.getElementById('timer-seconds-text');
-const progressFill = document.getElementById('timer-progress-bar-fill');
-const endTurnButton = document.getElementById('end-turn-button');
-
 function updateTimerUI(secondsLeft) {
     if (timerSecondsText) timerSecondsText.textContent = secondsLeft;
-    if (progressFill) progressFill.style.width = `${(secondsLeft / 30) * 100}%`;
+    if (progressFill) progressFill.style.width = `${(secondsLeft / TURN_DURATION) * 100}%`;
 }
 
 function stopTimer() {
@@ -196,33 +206,121 @@ function stopTimer() {
 }
 
 function startTimer() {
-    timeLeft = 30;
-    updateTimerUI(timeLeft);
+    turnStartTime = Date.now();
+    updateTimerUI(TURN_DURATION);
     if (endTurnButton) {
         endTurnButton.disabled = false;
         endTurnButton.classList.add('active');
     }
-
+    if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerUI(timeLeft);
-        if (timeLeft <= 0) {
-            stopTimer();
-            isPlayerTurn = false;
-            socket.emit('end-turn', roomId);
+        const elapsed = Math.floor((Date.now() - turnStartTime) / 1000);
+        const left = Math.max(0, TURN_DURATION - elapsed);
+        updateTimerUI(left);
+        if (left <= 0) {
+            clearInterval(timerInterval);
+            if (isPlayerTurn) {
+                isPlayerTurn = false;
+                if (!cardPlayedThisTurn) {
+                    document.getElementById('player-def-text').textContent = 0;
+                }
+                socket.emit('end-turn', roomId);
+                cardPlayedThisTurn = false;
+            }
         }
-    }, 1000);
+    }, 200);
 }
 
 function showFullTimer() {
-    stopTimer();
-    timeLeft = 30;
-    updateTimerUI(timeLeft);
+    turnStartTime = Date.now();
+    updateTimerUI(TURN_DURATION);
+    if (endTurnButton) {
+        endTurnButton.disabled = true;
+        endTurnButton.classList.remove('active');
+    }
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - turnStartTime) / 1000);
+        const left = Math.max(0, TURN_DURATION - elapsed);
+        updateTimerUI(left);
+        if (left <= 0) {
+            clearInterval(timerInterval);
+        }
+    }, 200);
 }
 
-// Accept response from the server after the 'end-turn' event
-socket.on('next-turn', (info) => {
-    console.log(info);
+function updateFromInfo(info, shouldUpdateTimer = false) {
+    const selfLogin = playerLogin.textContent;
+    let me, opponent;
+    if (info.player && info.opponent) {
+        if (info.player.login === selfLogin) {
+            me = info.player;
+            opponent = info.opponent;
+        } else {
+            me = info.opponent;
+            opponent = info.player;
+        }
+    } else if (info.player1 && info.player2) {
+        if (info.player1.login === selfLogin) {
+            me = info.player1;
+            opponent = info.player2;
+        } else {
+            me = info.player2;
+            opponent = info.player1;
+        }
+    } else {
+        return;
+    }
+
+    document.getElementById('player-hp-text').textContent = `${me.hp}/${PLAYER_MAX_HP} HP`;
+    document.getElementById('opponent-hp-text').textContent = `${opponent.hp}/${OPPONENT_MAX_HP} HP`;
+    document.getElementById('player-mana-text').textContent = me.mana ?? 0;
+    document.getElementById('opponent-mana-text').textContent = opponent.mana ?? 0;
+    document.getElementById('player-def-text').textContent = me.def ?? 0;
+    document.getElementById('opponent-def-text').textContent = opponent.def ?? 0;
+    renderHand(me.cards);
+
+    const playerAvatar = document.getElementById('player-avatar');
+    const opponentAvatar = document.getElementById('opponent-avatar');
+    if (info.turn === me.login) {
+        playerAvatar?.classList.add('active-turn');
+        opponentAvatar?.classList.remove('active-turn');
+    } else {
+        playerAvatar?.classList.remove('active-turn');
+        opponentAvatar?.classList.add('active-turn');
+    }
+
+    const playerHpBar = document.getElementById('player-hp-bar');
+    const opponentHpBar = document.getElementById('opponent-hp-bar');
+
+    if (playerHpBar) {
+        const percent = Math.max(0, Math.min(1, me.hp / PLAYER_MAX_HP));
+        playerHpBar.style.width = (percent * 100) + '%';
+    }
+    if (opponentHpBar) {
+        const percent = Math.max(0, Math.min(1, opponent.hp / OPPONENT_MAX_HP));
+        opponentHpBar.style.width = (percent * 100) + '%';
+    }
+
+    if (shouldUpdateTimer) {
+        if (info.turn === selfLogin) {
+            isPlayerTurn = true;
+            cardPlayedThisTurn = false;
+            startTimer();
+            addSystemMessage("It's your turn!");
+        } else {
+            isPlayerTurn = false;
+            showFullTimer();
+            addSystemMessage(`It's ${info.turn}'s turn.`);
+        }
+    }
+}
+
+socket.on('next-turn', info => {
+    updateFromInfo(info, true);
+});
+socket.on('card-played', info => {
+    updateFromInfo(info, false);
 });
 
 if (endTurnButton) {
@@ -230,7 +328,11 @@ if (endTurnButton) {
         if (isPlayerTurn) {
             stopTimer();
             isPlayerTurn = false;
+            if (!cardPlayedThisTurn) {
+                document.getElementById('player-def-text').textContent = 0;
+            }
             socket.emit('end-turn', roomId);
+            cardPlayedThisTurn = false;
         }
     });
 }
@@ -249,49 +351,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.emit('game-started', roomId);
 
-    socket.on('broadcast-message', (message) => {
-        addMessage(message);
-    });
+    socket.on('broadcast-message', addMessage);
 
     socket.on('draw-cards', async function handleDrawCards(info) {
         const playerLoginEl = document.getElementById('player-login');
         const opponentLoginEl = document.getElementById('opponent-login');
         const handContainerEl = document.getElementById('player-hand-container');
-
         if (!playerLoginEl || !opponentLoginEl || !handContainerEl) {
             setTimeout(() => handleDrawCards(info), 100);
             return;
         }
-
-        opponentLoginEl.textContent = info.opponent.login;
-        playerLoginEl.textContent = info.player.login;
+        playerLogin.textContent = info.player.login;
+        opponentLogin.textContent = info.opponent.login;
         renderHand(info.player.cards);
-
+        document.getElementById('player-mana-text').textContent = info.player.mana ?? 0;
+        document.getElementById('opponent-mana-text').textContent = info.opponent.mana ?? 0;
         const selfLogin = info.player.login;
-
-        if (info.turn === selfLogin) {
-            addSystemMessage("It's your turn!");
-        } else {
-            addSystemMessage(`It's ${info.opponent.login}'s turn.`);
-        }
-
         if (!hasShownFirstTurn) {
             await startDeciderAnimation(info.turn, selfLogin);
             hasShownFirstTurn = true;
             localStorage.setItem(firstTurnKey, 'true');
         }
-
         if (info.turn === selfLogin) {
             isPlayerTurn = true;
+            cardPlayedThisTurn = false;
             startTimer();
         } else {
             isPlayerTurn = false;
             showFullTimer();
         }
+        updateFromInfo(info, true);
     });
 
     if (chatForm && chatInput) {
-        chatForm.addEventListener('submit', (e) => {
+        chatForm.addEventListener('submit', e => {
             e.preventDefault();
             const text = chatInput.value.trim();
             if (text) {
@@ -299,15 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatInput.value = '';
             }
         });
-    } else {
-        console.error("Chat form or input not found");
     }
-
-    const deciderMusic = document.getElementById('decider-music');
-    const bgMusic = document.getElementById('bg-music');
-    const soundEmoji = document.getElementById('sound-emoji');
-    const volumeSlider = document.getElementById('volume-slider');
-    let soundEnabled = true;
 
     async function startDeciderAnimation(turnLogin, selfLogin) {
         if (soundEnabled && deciderMusic) {

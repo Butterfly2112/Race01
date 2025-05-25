@@ -122,9 +122,13 @@ button:hover {
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    border: 3px solid #ffea73;
     object-fit: cover;
-    box-shadow: 0 0 10px rgba(255, 220, 50, 0.5);
+}
+
+.avatar.active-turn {
+    box-shadow: 0 0 16px 4px #ffe066, 0 0 4px 2px #fff176;
+    border: 2px solid #ffe066;
+    transition: box-shadow 0.2s, border 0.2s;
 }
 
 .player-details {
@@ -228,7 +232,6 @@ button:hover {
 }
 
 .card:hover {
-    transform: translateY(-40px) scale(1.20) !important;
     z-index: 100 !important;
     box-shadow: 6px 6px 18px rgba(0,0,0,0.75);
 }
@@ -319,16 +322,14 @@ button:hover {
 
 .end-turn-btn {
     padding: 4px 12px;
-    font-size: 1em;
     border-radius: 6px;
     background: #ffe066;
     color: #222;
     border: none;
-    font-weight: bold;
     cursor: pointer;
     transition: background 0.2s, color 0.2s, opacity 0.2s;
-    min-width: 70px;
-    height: 32px;
+    min-width: 50px;
+    height: 30px;
 }
 
 #end-turn-button:disabled, .end-turn-btn:disabled {
@@ -475,36 +476,6 @@ button:hover {
     transition: opacity 0.5s ease, visibility 0s linear 0.5s;
 }
 
-.mana-bar-container {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-}
-
-.mana-star {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    margin-right: 4px;
-    position: relative;
-}
-
-.mana-star-svg {
-    width: 28px;
-    height: 28px;
-    display: block;
-    filter: drop-shadow(0 0 6px #ffe066) drop-shadow(0 0 2px #fff176);
-}
-
-.mana-star .mana-text {
-    font-size: 1em;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 0 0 3px #a259ff, 0 0 1px #fff;
-    margin-left: 2px;
-}
-
 .system-message {
     color: #ffe066;
     font-weight: bold;
@@ -564,4 +535,63 @@ button:hover {
     background: #222;
     border: 2px solid #ffe066;
     cursor: pointer;
+}
+
+.mana-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    margin-left: 4px;
+}
+
+.mana-star {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    position: relative;
+}
+
+.mana-star-svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    margin-right: 13px;
+    filter: drop-shadow(0 0 6px #ffe066) drop-shadow(0 0 2px #fff176);
+}
+
+.mana-text {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 8px #ffffff;
+
+}
+
+.def-bar-container {
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.def-shield {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #ffffff;
+    font-size: 1.1em;
+}
+
+.def-shield-svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    filter: drop-shadow(0 0 8px #7cf2f4) drop-shadow(0 0 2px #02ced1);
+}
+
+.def-text {
+    text-shadow: 0 0 8px #ffffff;
+    min-width: 18px;
+    text-align: center;
 }

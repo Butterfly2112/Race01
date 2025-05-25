@@ -96,6 +96,11 @@ export const playCard = (io, socket, info, games) => {
     const opponent = game.players.find(p => p.login !== socket.user.login);
     const card = player.cards.find(card => card.name === info.card);
 
+    // Check if the card exists and if the player has enough mana to play it
+    if (!card || player.mana < card.cost) return;
+    // Subtract the mana cost of the card from the player's mana
+    player.mana -= card.cost;
+
     opponent.hp -= Math.max(0, card.atk - opponent.def);
     player.def = card.def;
     player.cards.splice(player.cards.indexOf(card), 1);
