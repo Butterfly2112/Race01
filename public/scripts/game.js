@@ -27,6 +27,9 @@ let timerInterval;
 let turnStartTime = null;
 let soundEnabled = true;
 let cardPlayedThisTurn = false;
+let lastOpponentHp = null;
+let lastOpponentDef = null;
+let gameEnded = false;
 
 const nameToFile = {
     "😡😡😡": "Angry_cat",
@@ -125,7 +128,7 @@ const createCard = ({ imagePath, name, id, cost }, i, total) => {
         const mana = Number(document.getElementById('player-mana-text').textContent);
         if (mana < cost) {
             card.classList.add('disabled');
-            card.style.opacity = '0.5';
+            card.style.filter = 'brightness(0.5)';
             card.style.pointerEvents = 'none';
         }
     }
@@ -310,7 +313,7 @@ function updateFromInfo(info, shouldUpdateTimer = false) {
     document.getElementById('player-def-text').textContent = me.def ?? 0;
     document.getElementById('opponent-def-text').textContent = opponent.def ?? 0;
     renderHand(me.cards);
-    renderOpponentCards(opponent.cards.length);
+    renderOpponentCards(opponent.cards ? opponent.cards.length : 5);
 
     const playerAvatar = document.getElementById('player-avatar');
     const opponentAvatar = document.getElementById('opponent-avatar');
@@ -381,6 +384,34 @@ socket.on('next-turn', info => {
     updateFromInfo(info, true);
 });
 socket.on('card-played', info => {
+    if (gameEnded) return;
+
+    const opponent = (info.player1.login === playerLogin.textContent) ? info.player2 : info.player1;
+    const hpHitSound = document.getElementById('hp-hit-sound');
+    const defHitSound = document.getElementById('def-hit-sound');
+
+    if (lastOpponentHp === null || lastOpponentDef === null) {
+        if (soundEnabled && hpHitSound && opponent.hp < OPPONENT_MAX_HP) {
+            hpHitSound.currentTime = 0;
+            hpHitSound.play();
+        } else if (soundEnabled && defHitSound && opponent.def < 0) {
+            defHitSound.currentTime = 0;
+            defHitSound.play();
+        }
+        lastOpponentHp = opponent.hp;
+        lastOpponentDef = opponent.def;
+    } else {
+        if (opponent.hp < lastOpponentHp && soundEnabled && hpHitSound) {
+            hpHitSound.currentTime = 0;
+            hpHitSound.play();
+        } else if (opponent.def < lastOpponentDef && soundEnabled && defHitSound) {
+            defHitSound.currentTime = 0;
+            defHitSound.play();
+        }
+        lastOpponentHp = opponent.hp;
+        lastOpponentDef = opponent.def;
+    }
+
     updateFromInfo(info, false);
 });
 
@@ -415,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('broadcast-message', addMessage);
 
     socket.on('draw-cards', async function handleDrawCards(info) {
-        console.log(info);
         const playerLoginEl = document.getElementById('player-login');
         const opponentLoginEl = document.getElementById('opponent-login');
         const handContainerEl = document.getElementById('player-hand-container');
@@ -501,8 +531,51 @@ document.addEventListener('DOMContentLoaded', () => {
     renderOpponentCards(5);
 });
 
-socket.on('game-ended', (info) => {
-    console.log(info);
+socket.on('game-ended', ({ winner, turns }) => {
+    gameEnded = true;
+
+    stopTimer();
+
+    if (bgMusic) {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+    }
+
+    const selfLogin = document.getElementById('player-login').textContent;
+    const modal = document.getElementById('game-over-modal');
+    const title = document.getElementById('game-over-title');
+    const turnsText = document.getElementById('game-over-turns');
+    const message = document.getElementById('game-over-message');
+    const exitBtn = document.getElementById('game-over-exit');
+    const image = document.getElementById('game-over-image');
+    const winSound = document.getElementById('win-sound');
+    const loseSound = document.getElementById('lose-sound');
+
+    if (winner.login === selfLogin) {
+        title.textContent = 'Victory!';
+        message.textContent = `You won! Great success!`;
+        image.src = '/images/win.jpg';
+        image.style.display = 'block';
+        if (soundEnabled && winSound) {
+            winSound.currentTime = 0;
+            winSound.play();
+        }
+    } else {
+        title.textContent = 'Defeat';
+        message.textContent = `Oh noo.. You lost... Better luck next time)`;
+        image.src = '/images/lose.jpg';
+        image.style.display = 'block';
+        if (soundEnabled && loseSound) {
+            loseSound.currentTime = 0;
+            loseSound.play();
+        }
+    }
+    turnsText.textContent = `Number of moves: ${turns}`;
+    modal.classList.remove('hidden');
+
+    exitBtn.onclick = () => {
+        window.location.href = '/';
+    };
 });
 
 window.addEventListener('beforeunload', () => {
