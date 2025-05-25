@@ -348,6 +348,35 @@ function updateFromInfo(info, shouldUpdateTimer = false) {
     }
 }
 
+async function fetchAndDisplayAvatar() {
+  const opponentAvatarImage = document.getElementById('decider-opponent-avatar');
+  const playerAvatarImage = document.getElementById('decider-player-avatar'); //They switched so I switched them places too
+  const playerAvatarImage2 = document.getElementById('player-avatar');
+
+  const cached = localStorage.getItem('avatarURL');
+  if (cached) playerAvatarImage.src = cached;
+  try {
+    const res = await fetch('/api/profile_picture')
+
+    if (res.ok) {
+      const res_json = await res.json();
+      
+      if (res_json) {
+        playerAvatarImage.src = res_json.pfpUrl;
+        playerAvatarImage2.src = res_json.pfpUrl;
+        localStorage.setItem('avatarURL', res_json.pfpUrl);
+      } else {
+        playerAvatarImage.src = "/images/default-avatar.jpg";
+        playerAvatarImage2.src = res_json.pfpUrl;
+      }
+    } else if (res.status !== 404) console.warn('Avatar GET status', res.status);
+  } catch (err) {
+    console.error('Failed to fetch avatar: ', err);
+  }
+}
+
+fetchAndDisplayAvatar();
+
 socket.on('next-turn', info => {
     updateFromInfo(info, true);
 });
