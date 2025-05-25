@@ -154,6 +154,16 @@
         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
     </div>
 
+    <div id="game-over-modal" class="game-over-modal hidden">
+        <div class="game-over-content">
+            <img id="game-over-image" src="" alt="Game Result">
+            <h2 id="game-over-title"></h2>
+            <p id="game-over-message"></p>
+            <p id="game-over-turns"></p>
+            <button id="game-over-exit">Exit</button>
+        </div>
+    </div>
+
     <script src="/scripts/game.js" type="module"></script>
 </body>
 </html>

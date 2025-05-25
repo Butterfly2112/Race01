@@ -590,3 +590,60 @@ button:hover {
     min-width: 18px;
     text-align: center;
 }
+
+#game-over-image {
+    width: 170px;
+    margin-bottom: 20px;
+    display: none;
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.game-over-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.748);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.game-over-modal.hidden {
+    display: none;
+}
+
+.game-over-content {
+    background: #ae8bc1;
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow:
+        0 0 32px 8px #7354b3,
+        0 0 12px 4px #b676ff;
+    width: 400px;
+    min-height: 380px;
+    box-sizing: border-box;
+}
+
+#game-over-title {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+#game-over-message, #game-over-turns {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+#game-over-exit {
+    color: #fff;
+    background-color: #30233b;
+    border-style: none;
+}
+
+#game-over-exit:hover {
+    color: #fff;
+    background-color: #000000;
+}

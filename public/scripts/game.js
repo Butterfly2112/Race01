@@ -310,7 +310,7 @@ function updateFromInfo(info, shouldUpdateTimer = false) {
     document.getElementById('player-def-text').textContent = me.def ?? 0;
     document.getElementById('opponent-def-text').textContent = opponent.def ?? 0;
     renderHand(me.cards);
-    renderOpponentCards(opponent.cards ? opponent.cards.length : 0);
+    renderOpponentCards(opponent.cards ? opponent.cards.length : 5);
 
     const playerAvatar = document.getElementById('player-avatar');
     const opponentAvatar = document.getElementById('opponent-avatar');
@@ -472,8 +472,34 @@ document.addEventListener('DOMContentLoaded', () => {
     renderOpponentCards(5);
 });
 
-socket.on('game-ended', (info) => {
-    console.log(info);
+socket.on('game-ended', ({ winner, loser, turns }) => {
+    stopTimer();
+
+    const selfLogin = document.getElementById('player-login').textContent;
+    const modal = document.getElementById('game-over-modal');
+    const title = document.getElementById('game-over-title');
+    const turnsText = document.getElementById('game-over-turns');
+    const message = document.getElementById('game-over-message');
+    const exitBtn = document.getElementById('game-over-exit');
+    const image = document.getElementById('game-over-image');
+
+    if (winner.login === selfLogin) {
+        title.textContent = 'Victory!';
+        message.textContent = `You won! Great success!`;
+        image.src = '/images/win.jpg';
+        image.style.display = 'block';
+    } else {
+        title.textContent = 'Defeat';
+        message.textContent = `Oh noo.. You lost... Better luck next time)`;
+        image.src = '/images/lose.jpg';
+        image.style.display = 'block';
+    }
+    turnsText.textContent = `Number of moves: ${turns}`;
+    modal.classList.remove('hidden');
+
+    exitBtn.onclick = () => {
+        window.location.href = '/';
+    };
 });
 
 window.addEventListener('beforeunload', () => {
