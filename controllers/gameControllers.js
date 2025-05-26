@@ -68,7 +68,7 @@ export const gameStarted = async (io, socket, roomID, games) => {
 
         io.to(socket.id).emit('draw-cards', {
             player: existingPlayer,
-            opponent: { login: opponent.login, hp: opponent.hp, def: opponent.def, mana: opponent.mana },
+            opponent: opponent ? { login: opponent.login, hp: opponent.hp, def: opponent.def, mana: opponent.mana } : null,
             turn: game.turn
         });
     }

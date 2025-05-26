@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lobby</title>
+    <title>Memetics</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+      <link href="https://fonts.googleapis.com/css2?family=Nixie+One&family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Handjet:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body class="lobby-page">
     <div class="container" id="lobby-container">
@@ -12,9 +14,13 @@
         <div class="lobby-section">
             <button id="create-room-button" style="margin-bottom: 20px;">Create Room</button>
             <div class="join-room">
+                <div> 
                 <label for="room-id">Join Room:</label>
                 <input type="text" id="room-id" placeholder="Enter Room ID">
+                </div>
                 <button id="join-room-button">Join</button>
+            </div>
+            <div class="join-random-room-row">
                 <button id="join-random-room">Join random game</button>
             </div>
         </div>

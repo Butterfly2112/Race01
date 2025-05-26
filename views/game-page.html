@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Page</title>
+    <title>Memetics</title>
     <link rel="stylesheet" href="/css/game-page.css">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&family=Irish+Grover&family=Faster+One&family=Ewert&display=swap" rel="stylesheet">
 </head>
 <body class="game-background">
 
@@ -140,7 +142,7 @@
     </div>
 
     <div class="turn-timer">
-        <span id="timer-seconds-text">30</span>s
+        <span id="timer-seconds-text">30</span><p>s</p>
         <div id="timer-progress-bar">
             <div id="timer-progress-bar-fill"></div>
         </div>
@@ -168,6 +170,6 @@
         </div>
     </div>
 
-    <script src="/scripts/game.js" type="module"></script>
+    <script src="/scripts/game.js" type="module" defer></script>
 </body>
 </html>

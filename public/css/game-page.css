@@ -5,6 +5,7 @@ body.game-background {
     background-repeat: no-repeat;
     background-attachment: fixed;
     overflow-x: hidden;
+    font-family: "Irish Grover", system-ui;
 }
 
 #chat-container {
@@ -53,6 +54,7 @@ body.game-background {
 }
 
 button {
+    font-family: "Irish Grover", system-ui;
     padding: 8px 15px;
     font-size: 0.9em;
     color: #17110b;
@@ -91,6 +93,7 @@ button:hover {
 }
 
 .opponent-zone-container {
+    font-family: "Irish Grover", system-ui;
     position: absolute;
     top: 20px;
     left: 30px;
@@ -239,6 +242,7 @@ button:hover {
 }
 
 .player-controls-area {
+    font-family: "Irish Grover", system-ui;
     position: fixed;
     bottom: 30px;
     left: 30px;
@@ -247,21 +251,6 @@ button:hover {
     align-items: flex-start;
     gap: 15px;
     z-index: 15;
-}
-
-.player-actions-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-#timer-display-text-container {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #fde19a;
-    margin-bottom: -10px;
-    text-align: center;
 }
 
 .timer-progress-bar-container {
@@ -316,6 +305,7 @@ button:hover {
 }
 
 .end-turn-btn {
+    font-family: "Irish Grover", system-ui;
     padding: 4px 12px;
     border-radius: 6px;
     background: #ffe066;
@@ -615,34 +605,53 @@ button:hover {
 }
 
 .game-over-content {
-    background: #cbfbff;
-    border-radius: 12px;
+    font-family: 'Playwrite HU', Arial, sans-serif;
+    border-radius: 60px 20px 60px 20px / 40px 80px 40px 80px;
     padding: 40px 30px;
     text-align: center;
-    box-shadow:
-        0 0 32px 8px #4ed6ff,
-        0 0 12px 4px #8fe3ff;
     width: 400px;
     min-height: 380px;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-over-content.lose{
+    background: #cbcbcbc2;
+    box-shadow:
+        0 0 32px 8px #4d4d4d9c,
+        0 0 12px 4px #aeaeaeae;
+}
+
+.game-over-content.win {
+ background: #d1edffc2;
+    box-shadow:
+        0 0 32px 8px #91caff9c,
+        0 0 12px 4px #b6dbffae;
 }
 
 #game-over-title {
-    font-size: 2em;
+  font-family: "Ewert", serif;
+    font-size: 2.4em;
     margin-bottom: 10px;
+    letter-spacing: 2px;
+    color: #2e2e2e;
+    text-shadow: 0 2px 8px #fff, 0 0 2px #ffe066;
 }
 
 #game-over-message, #game-over-turns {
     font-size: 1.2em;
     margin-bottom: 15px;
+    color: #222;
 }
 
 #game-over-exit {
-    background-color: rgb(50, 208, 236);
+      font-family: "Ewert", serif;
+    background-color: rgb(202, 202, 202);
+    border: 2px solid rgba(98, 98, 98, 0.686);
     padding: 10px 20px;
-    border-style: none;
 }
 
 #game-over-exit:hover {
-    background-color: rgb(21, 165, 187);
+    background-color: rgb(98, 98, 98);
 }
