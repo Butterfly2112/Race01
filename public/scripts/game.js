@@ -600,6 +600,10 @@ socket.on('game-ended', ({ winner, turns }) => {
     };
 });
 
+socket.on('disconnect-win', (info) => {
+    console.log(info);
+});
+
 window.addEventListener('beforeunload', () => {
     socket.disconnect();
 });

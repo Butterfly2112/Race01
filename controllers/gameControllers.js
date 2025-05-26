@@ -27,11 +27,18 @@ export const gameStarted = async (io, socket, roomID, games) => {
             sockets: [],
             deck: deck,
             turn: '',
-            turnCount: 1
+            turnCount: 1,
+            isOver: false,
+            winner: null,
+            loser: null
         };
     }
 
     const game = games[roomID];
+
+    if (game.isOver) {
+        io.to(roomID).emit('game-ended', { winner: game.winner, loser: game.loser, turns: game.turnCount });
+    }
 
     const existingPlayer = game.players.find(p => p.login === socket.user.login);
     // If the player doesn't exist - connect them to the game
@@ -68,7 +75,9 @@ export const gameStarted = async (io, socket, roomID, games) => {
 
         io.to(socket.id).emit('draw-cards', {
             player: existingPlayer,
-            opponent: { login: opponent.login, hp: opponent.hp, def: opponent.def, mana: opponent.mana },
+            opponent: opponent
+                ? { login: opponent.login, hp: opponent.hp, def: opponent.def, mana: opponent.mana }
+                : null,
             turn: game.turn
         });
     }
@@ -126,6 +135,9 @@ export const playCard = (io, socket, info, games) => {
     }
 
     if (opponent.hp <= 0) {
+        game.winner = player;
+        game.loser = opponent;
+        game.isOver = true;
         io.to(info.roomId).emit('game-ended', { winner: player, loser: opponent, turns: game.turnCount });
     }
 
@@ -139,15 +151,34 @@ export const messageSent = (io, socket, roomID, message) => {
     io.to(roomID).emit('broadcast-message', `${socket.user.login}: ${message}`);
 }
 
-export const disconnect = (io, socket) => {
+export const disconnect = (io, socket, games) => {
     setTimeout(() => {
-        if (socket.id === guests.get(socket.user.login)) {
-            guests.delete(socket.user.login);
-        }
+        const isStillDisconnected = ![...io.sockets.sockets.values()].some(
+            s => s.user?.login === socket.user.login
+        );
 
-        const index = randomRooms.findIndex(room => room.host === socket.user.login);
-        if (index !== -1) {
-            randomRooms.splice(index, 1);
+        if (isStillDisconnected) {
+            if (guests.has(socket.user.login) && socket.id === guests.get(socket.user.login)) {
+                guests.delete(socket.user.login);
+            }
+
+            const index = randomRooms.findIndex(room => room.host === socket.user.login);
+            if (index !== -1) {
+                randomRooms.splice(index, 1);
+            }
+
+            const roomID = Object.entries(games).find(([id, game]) =>
+                game.players.some(player => player.login === socket.user.login)
+            )?.[0];
+
+            if (games[roomID] && !games[roomID].isOver) {
+                const winner = games[roomID].players.find(p => p.login !== socket.user.login);
+                const loser = games[roomID].players.find(p => p.login === socket.user.login);
+                games[roomID].winner = winner;
+                games[roomID].loser = loser;
+                games[roomID].isOver = true;
+                io.to(roomID).emit('disconnect-win', { winner, loser, turns: games[roomID].turnCount });
+            }
         }
-    }, 1000)
-}
+    }, 1000);
+};
