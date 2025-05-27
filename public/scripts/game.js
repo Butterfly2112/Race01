@@ -611,9 +611,11 @@ async function fetchAndDisplayAvatar(oppLogin) {
         showGameOverModal(winner, turns);
     });
 
-socket.on('disconnect-win', (info) => {
-    console.log(info);
-});
+    socket.on('disconnect-win', (info) => {
+        addSystemMessage(`Player ${info.loser.login} disconnected`);
+        gameEnded = true;
+        stopTimer();
+    });
 
     window.addEventListener('beforeunload', () => {
         socket.disconnect();

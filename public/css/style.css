@@ -44,28 +44,30 @@ body {
 
 .join-room {
     display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    justify-content: stretch;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     box-sizing: border-box;
     padding: 10px 0;
 }
 
+.join-room-label {
+    font-weight: bold;
+    color: #f5f5f5;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.join-room-controls {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
 .join-room > div {
     flex: 1 1 auto;
     min-width: 0;
-}
-
-#room-id {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#join-room-button {
-    width: auto;
-    min-width: 100px;
-    padding: 10px 24px;
 }
 
 body.landing-page-body {
@@ -89,7 +91,7 @@ body.landing-page-body h1 {
     font-family: "Press Start 2P", system-ui;
     font-size: 3rem;
     margin-bottom: 20px;
-    text-shadow:  0 0 20px #f2f2f2, 0 0 30px rgba(238, 235, 225, 0.5);
+    text-shadow:  0 0 10px #f2f2f2, 0 0 20px rgba(238, 235, 225, 0.5);
     letter-spacing: 3px;
 }
 
@@ -359,4 +361,25 @@ input:checked + .slider::before {
 
 #back-home {
     text-decoration: none;
+}
+
+#room-id {
+    width: 100%;
+    height: 45px;
+    margin: 0;
+    box-sizing: border-box;
+    padding: 3px 10px !important;
+    font-size: 0.9rem !important;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+#join-room-button {
+    width: auto;
+    min-width: 100px;
+    padding: 6px 18px;
+    margin: 0;
+    font-size: 0.95rem;
 }
