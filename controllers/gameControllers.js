@@ -36,8 +36,16 @@ export const gameStarted = async (io, socket, roomID, games) => {
 
     const game = games[roomID];
 
+    // Manage the refresh of the page after ending the game
     if (game.isOver) {
         io.to(roomID).emit('game-ended', { winner: game.winner, loser: game.loser, turns: game.turnCount });
+    }
+
+    // Delete a random lobby
+    const room = randomRooms.find(r => r.roomID === roomID);
+    const host = game.players.find(p => p.login === room?.host);
+    if (host) {
+        randomRooms.splice(randomRooms.indexOf(room), 1);
     }
 
     const existingPlayer = game.players.find(p => p.login === socket.user.login);
@@ -86,7 +94,7 @@ export const gameStarted = async (io, socket, roomID, games) => {
 export const endTurn = async (io, socket, roomID, games) => {
     const game = games[roomID];
 
-    if (socket.user.login === game.turn) {
+    if (game && socket.user.login === game.turn) {
         const player = game.players.find(p => p.login === socket.user.login);
         const opponent = game.players.find(p => p.login !== socket.user.login);
 
@@ -160,11 +168,6 @@ export const disconnect = (io, socket, games) => {
         if (isStillDisconnected) {
             if (guests.has(socket.user.login) && socket.id === guests.get(socket.user.login)) {
                 guests.delete(socket.user.login);
-            }
-
-            const index = randomRooms.findIndex(room => room.host === socket.user.login);
-            if (index !== -1) {
-                randomRooms.splice(index, 1);
             }
 
             const roomID = Object.entries(games).find(([id, game]) =>
