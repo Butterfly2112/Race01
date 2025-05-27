@@ -9,6 +9,7 @@
     "name": "Abduction!",
     "atk": 3,
     "def": 0,
+    "ability": 5,
     "cost": 1
   },
   {
@@ -31,8 +32,9 @@
   },
   {
     "name": "Me and Pookie🩷",
-    "atk": 3,
-    "def": 3,
+    "atk": 2,
+    "def": 2,
+    "heal": 2,
     "cost": 3
   },
   {
@@ -45,6 +47,7 @@
     "name": "Sniffer",
     "atk": 2,
     "def": 2,
+    "ability": "steal",
     "cost": 2
   },
   {
@@ -93,6 +96,7 @@
     "name": "Smoll🤏",
     "atk": 1,
     "def": 1,
+    "heal": 1,
     "cost": 1
   },
   {
@@ -105,18 +109,21 @@
     "name": "Nerd",
     "atk": 1,
     "def": 2,
+    "ability": "swap",
     "cost": 1
   },
   {
     "name": "Loading...",
     "atk": 1,
     "def": 1,
+    "ability": "swap",
     "cost": 1
   },
   {
     "name": "Hehe",
     "atk": 1,
     "def": 2,
+    "ability": "steal",
     "cost": 1
   },
   {
@@ -140,13 +147,15 @@
   {
     "name": "Wewewe",
     "atk": 1,
-    "def": 2,
+    "def": 1,
+    "heal": 1,
     "cost": 1
   },
   {
     "name": "Espionage Agent",
     "atk": 1,
     "def": 2,
+    "ability": "steal",
     "cost": 1
   },
   {
@@ -165,6 +174,7 @@
     "name": "Wait… What?",
     "atk": 1,
     "def": 1,
+    "ability": "swap",
     "cost": 1
   },
   {

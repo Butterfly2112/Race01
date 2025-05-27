@@ -140,6 +140,36 @@ export const playCard = (io, socket, info, games) => {
         opponent.hp -= remainingAtk;
     }
 
+    player.hp = Math.min(20, player.hp + card.heal);
+
+    if (card.ability) {
+        if (card.ability === 'swap') {
+            player.cards.splice(player.cards.indexOf(card), 1);
+            const temp = player.cards.concat(game.deck.getCards(1));
+            player.cards = opponent.cards;
+            opponent.cards = temp;
+        }
+        if (card.ability === 'steal') {
+            const success = Math.random() < 0.5;
+
+            if ( card.name === 'Sniffer' || success) {
+                const costlyCard = opponent.cards.reduce((maxCard, currentCard) => {
+                    return currentCard.cost > maxCard.cost ? currentCard : maxCard;
+                });
+                player.cards = player.cards.concat(costlyCard);
+                opponent.cards.splice(opponent.cards.indexOf(costlyCard), 1);
+                opponent.cards = opponent.cards.concat(game.deck.getCards(1));
+            }
+            else {
+                const costlyCard = player.cards.reduce((maxCard, currentCard) => {
+                    return currentCard.cost > maxCard.cost ? currentCard : maxCard;
+                });
+                player.cards.splice(player.cards.indexOf(costlyCard), 1);
+                player.cards = player.cards.concat(game.deck.getCards(1));
+            }
+        }
+    }
+
     if (opponent.hp <= 0) {
         game.winner = player;
         game.loser = opponent;
@@ -148,7 +178,9 @@ export const playCard = (io, socket, info, games) => {
     }
 
     player.def = card.def;
-    player.cards.splice(player.cards.indexOf(card), 1);
+    if (card.ability !== 'swap') {
+        player.cards.splice(player.cards.indexOf(card), 1);
+    }
 
     io.to(info.roomId).emit('card-played', { player1: player, player2: opponent, turn: game.turn });
 }

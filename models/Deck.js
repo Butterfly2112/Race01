@@ -21,7 +21,7 @@ export class Deck {
 
             const index = Math.floor(Math.random() * this.size);
             const [card] = this.cards.splice(index, 1);
-            cards.push(new Card(card.name, card.atk, card.def, card.cost, card.cost));
+            cards.push(new Card(card.name, card.atk, card.def, card.heal, card.ability, card.cost));
             this.size--;
         }
 
