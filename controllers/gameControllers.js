@@ -41,13 +41,6 @@ export const gameStarted = async (io, socket, roomID, games) => {
         io.to(roomID).emit('game-ended', { winner: game.winner, loser: game.loser, turns: game.turnCount });
     }
 
-    // Delete a random lobby
-    const room = randomRooms.find(r => r.roomID === roomID);
-    const host = game.players.find(p => p.login === room?.host);
-    if (host) {
-        randomRooms.splice(randomRooms.indexOf(room), 1);
-    }
-
     const existingPlayer = game.players.find(p => p.login === socket.user.login);
     // If the player doesn't exist - connect them to the game
     if (!existingPlayer) {
@@ -56,6 +49,11 @@ export const gameStarted = async (io, socket, roomID, games) => {
 
         game.players.push(player);
         game.sockets.push(socket.id);
+
+        const roomIndex = randomRooms.findIndex(r => r.roomID === roomID);
+        if (roomIndex !== -1) {
+            randomRooms.splice(roomIndex, 1);
+        }
 
         if (game.players.length === 2) {
             const [player1, player2] = game.players;
@@ -174,13 +172,14 @@ export const disconnect = (io, socket, games) => {
                 game.players.some(player => player.login === socket.user.login)
             )?.[0];
 
-            if (games[roomID] && !games[roomID].isOver) {
+            if (games[roomID]) {
                 const winner = games[roomID].players.find(p => p.login !== socket.user.login);
                 const loser = games[roomID].players.find(p => p.login === socket.user.login);
                 games[roomID].winner = winner;
                 games[roomID].loser = loser;
                 games[roomID].isOver = true;
                 io.to(roomID).emit('disconnect-win', { winner, loser, turns: games[roomID].turnCount });
+                delete games[roomID];
             }
         }
     }, 1000);
