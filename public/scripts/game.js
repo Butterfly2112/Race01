@@ -356,34 +356,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchAndDisplayAvatar() {
-      const opponentAvatarImage = document.getElementById('decider-opponent-avatar');
-      const playerAvatarImage = document.getElementById('decider-player-avatar'); //They switched so I switched them places too
-      const playerAvatarImage2 = document.getElementById('player-avatar');
+async function fetchAndDisplayAvatar(oppLogin) {
+  const opponentAvatarImage  = document.getElementById('decider-opponent-avatar');
+  const opponentAvatarImage2 = document.getElementById('opponent-avatar');
+  const playerAvatarImage = document.getElementById('decider-player-avatar');
+  const playerAvatarImage2 = document.getElementById('player-avatar');
 
-      const cached = localStorage.getItem('avatarURL');
-      if (cached) playerAvatarImage.src = cached;
-      try {
-        const res = await fetch('/api/profile_picture')
+  const cached = localStorage.getItem('avatarURL');
+  if (cached) {
+    playerAvatarImage.src = cached;
+    playerAvatarImage2.src = cached;
+  }
+  try {
+    const res = await fetch('/api/profile_picture')
 
-        if (res.ok) {
-          const res_json = await res.json();
-          
-          if (res_json) {
-            playerAvatarImage.src = res_json.pfpUrl;
-            playerAvatarImage2.src = res_json.pfpUrl;
-            localStorage.setItem('avatarURL', res_json.pfpUrl);
-          } else {
-            playerAvatarImage.src = "/images/default-avatar.jpg";
-            playerAvatarImage2.src = res_json.pfpUrl;
-          }
-        } else if (res.status !== 404) console.warn('Avatar GET status', res.status);
-      } catch (err) {
-        console.error('Failed to fetch avatar: ', err);
+    if (res.ok) {
+      const res_json = await res.json();
+      
+      if (res_json) {
+        playerAvatarImage.src = res_json.pfpUrl;
+        playerAvatarImage2.src = res_json.pfpUrl;
+        localStorage.setItem('avatarURL', res_json.pfpUrl);
+      } else {
+        playerAvatarImage.src = "/images/default-avatar.jpg";
+        playerAvatarImage2.src = res_json.pfpUrl;
       }
-    }
+    } else if (res.status !== 404) console.warn('Avatar GET status', res.status);
+  } catch (err) {
+    console.error('Failed to fetch avatar: ', err);
+  }
 
-    fetchAndDisplayAvatar();
+  try {
+    const res2 = await fetch('/api/profile_picture?login=' + encodeURIComponent(oppLogin)); //info.opponent.login
+    if (res2.ok) {
+      const res_json2 = await res2.json();
+
+      if (res_json2) {
+        opponentAvatarImage.src = res_json2.pfpUrl;
+        opponentAvatarImage2.src = res_json2.pfpUrl;
+        localStorage.setItem('avatarURL', res_json2.pfpUrl);
+      } else {
+        opponentAvatarImage.src = "/images/default-avatar.jpg";
+        opponentAvatarImage2.src = res_json2.pfpUrl;
+      }
+    } else if (res2.status !== 404) console.warn('Avatar GET status', res2.status);
+  } catch (err) {
+    console.error('Failed to fetch avatar: ', err);
+  }
+}
 
     socket.on('next-turn', info => {
         updateFromInfo(info, true);
@@ -459,7 +479,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         playerLogin.textContent = info.player.login;
-        opponentLogin.textContent = info.opponent.login;
+        opponentLogin.textContent = info.opponent.login;;
+        fetchAndDisplayAvatar(info.opponent.login);
+
         renderHand(info.player.cards);
         document.getElementById('player-mana-text').textContent = info.player.mana ?? 0;
         document.getElementById('opponent-mana-text').textContent = info.opponent.mana ?? 0;
@@ -587,10 +609,14 @@ document.addEventListener('DOMContentLoaded', () => {
         turnsText.textContent = `Number of moves: ${turns}`;
         modal.classList.remove('hidden');
 
-        exitBtn.onclick = () => {
-            window.location.href = '/';
-        };
-    });
+    exitBtn.onclick = () => {
+        window.location.href = '/';
+    };
+});
+
+socket.on('disconnect-win', (info) => {
+    console.log(info);
+});
 
     window.addEventListener('beforeunload', () => {
         socket.disconnect();

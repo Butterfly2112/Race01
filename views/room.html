@@ -11,9 +11,14 @@
 <body class="room-page">
     <div class="container" id="room-container">
         <h2>Room</h2>
-        <label for="checkbox" style="display: inline">Friends-only</label>
-        <input type="checkbox" id="checkbox">
-        <label for="checkbox" style="display: inline">Random game</label>
+        <div class="toggle-container">
+            <span class="lobby-span">Private</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="checkbox">
+                <span class="slider"></span>
+            </label>
+            <span class="lobby-span">Public</span>
+        </div>
         <p id="room-id-display"></p>
         <p id="room-message" class="info"></p>
         <div id="game-area">

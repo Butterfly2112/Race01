@@ -107,6 +107,10 @@ class Users extends Model {
                    return reject(new Error('Failed to process a query: ' + err));
                }
 
+               if (!res[0]) {
+                   return resolve(null);
+               }
+
                resolve(res[0]);
            });
         });

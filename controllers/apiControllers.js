@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import fs from 'fs/promises';
 import User from '../models/users.js';
 import { generatePassword, sendEmail } from "../utils.js";
 
@@ -125,6 +126,11 @@ export const uploadPFP = async (req, res) => {
     const file = req.file;
 
     try {
+        const response = await User.getPFP(login);
+        if (response && response.profile_picture !== './uploads/default.png') {
+            await fs.unlink(response.profile_picture);
+        }
+
         await User.savePFP(login, file.destination + '/' + file.filename)
         res.status(200).send();
     }
@@ -134,11 +140,19 @@ export const uploadPFP = async (req, res) => {
 }
 
 export const getPFP = async (req, res) => {
-    const { login } = req.login;
+    let { login } = req.login;
+    if (req.query.login) {
+        login = req.query.login;
+    }
 
     try {
         const response = await User.getPFP(login);
-        res.status(200).json({ pfpUrl: response.profile_picture });
+        if (response) {
+            res.status(200).json({ pfpUrl: response.profile_picture });
+        }
+        else {
+            res.status(200).json({ pfpUrl: './uploads/default.png' });
+        }
     }
     catch (err) {
         console.log(err);
