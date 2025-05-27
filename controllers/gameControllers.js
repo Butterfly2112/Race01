@@ -172,7 +172,7 @@ export const disconnect = (io, socket, games) => {
                 game.players.some(player => player.login === socket.user.login)
             )?.[0];
 
-            if (games[roomID]) {
+            if (games[roomID] && !games[roomID].isOver) {
                 const winner = games[roomID].players.find(p => p.login !== socket.user.login);
                 const loser = games[roomID].players.find(p => p.login === socket.user.login);
                 games[roomID].winner = winner;
