@@ -127,7 +127,7 @@ export const uploadPFP = async (req, res) => {
 
     try {
         const response = await User.getPFP(login);
-        if (response && response.profile_picture !== './uploads/default.png') {
+        if (response && response.profile_picture && response.profile_picture !== './uploads/default.png') {
             await fs.unlink(response.profile_picture);
         }
 

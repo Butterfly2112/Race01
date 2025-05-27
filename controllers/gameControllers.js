@@ -145,7 +145,7 @@ export const playCard = (io, socket, info, games) => {
     if (card.ability) {
         if (card.ability === 'swap') {
             player.cards.splice(player.cards.indexOf(card), 1);
-            const temp = player.cards.concat(game.deck.getCards(1));
+            const temp = player.cards.concat(game.deck.getCards(5 - player.cards.length));
             player.cards = opponent.cards;
             opponent.cards = temp;
         }
@@ -158,14 +158,14 @@ export const playCard = (io, socket, info, games) => {
                 });
                 player.cards = player.cards.concat(costlyCard);
                 opponent.cards.splice(opponent.cards.indexOf(costlyCard), 1);
-                opponent.cards = opponent.cards.concat(game.deck.getCards(1));
+                opponent.cards = opponent.cards.concat(game.deck.getCards(5 - opponent.cards.length));
             }
             else {
                 const costlyCard = player.cards.reduce((maxCard, currentCard) => {
                     return currentCard.cost > maxCard.cost ? currentCard : maxCard;
                 });
                 player.cards.splice(player.cards.indexOf(costlyCard), 1);
-                player.cards = player.cards.concat(game.deck.getCards(1));
+                player.cards = player.cards.concat(game.deck.getCards(5 - opponent.cards.length));
             }
         }
     }
