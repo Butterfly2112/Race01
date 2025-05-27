@@ -655,3 +655,18 @@ button:hover {
 #game-over-exit:hover {
     background-color: rgb(98, 98, 98);
 }
+
+.card-disappearing {
+    animation: cardFadeOut 0.7s forwards;
+}
+
+@keyframes cardFadeOut {
+    0%   { opacity: 1; }
+    10%  { opacity: 0.9; }
+    20%  { opacity: 0.8; }
+    30%  { opacity: 0.7; }
+    40%  { opacity: 0.6; }
+    50%  { opacity: 0.5; }
+    60%  { opacity: 0.4; }
+    100% { opacity: 0; }
+}

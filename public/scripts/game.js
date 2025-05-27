@@ -98,8 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
             const mana = Number(document.getElementById('player-mana-text').textContent);
             if (isPlayerTurn && roomId && mana >= (cost ?? 1)) {
-                socket.emit('play-card', { roomId, card: name });
-                cardPlayedThisTurn = true;
+                card.classList.add('card-disappearing');
+                setTimeout(() => {
+                    socket.emit('play-card', { roomId, card: name });
+                    cardPlayedThisTurn = true;
+                }, 700);
             }
         });
 
@@ -534,7 +537,7 @@ async function fetchAndDisplayAvatar(oppLogin) {
         if (!drawCardsReceived) {
             socket.emit('game-started', roomId);
         }
-    }, 1000);
+    }, 500);
 
     if (chatForm && chatInput) {
         chatForm.addEventListener('submit', e => {
