@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let myLogin = null;
     let pendingGameEnded = null;
     let winOrLoseSoundPlayed = false;
+    let disconnectTimeout = null;
 
     const nameToFile = {
         "😡😡😡": "Angry_cat",
@@ -615,7 +616,17 @@ async function fetchAndDisplayAvatar(oppLogin) {
         addSystemMessage(`Player ${info.loser.login} disconnected`);
         gameEnded = true;
         stopTimer();
+        
+        showGameOverModalWithDisconnect(info.winner, info.turns, info.loser.login);
     });
+
+    function showGameOverModalWithDisconnect(winner, turns, loserLogin) {
+        showGameOverModal(winner, turns);
+        const message = document.getElementById('game-over-message');
+        if (message) {
+            message.textContent = `The victory is awarded, since the opponent (${loserLogin}) has disconnected.`;
+        }
+    }
 
     window.addEventListener('beforeunload', () => {
         socket.disconnect();
