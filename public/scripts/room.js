@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomId = urlParams.get('roomId');
 
     if (roomId) {
-        roomIdDisplay.textContent = `Room ID: ${roomId}`;
+        roomIdDisplay.textContent = `ID: ${roomId}`;
         roomMessage.textContent = 'Waiting for your opponent to join...';
 
         checkbox.addEventListener('change', () => {

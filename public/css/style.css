@@ -30,8 +30,11 @@ body {
     margin: 60px auto;
 }
 
-#login, .room-page, .lobby-page {
+#login {
     font-family: "Nixie One", system-ui;
+}
+.room-page, .lobby-page {
+    font-family: "Cinzel", serif;
 }
 
 #join-room-button {
