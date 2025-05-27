@@ -283,6 +283,7 @@ button#start_the_game:disabled:hover { transform: none; }
 }
 
 #guest-login-form {
+    font-family: "Nixie One", system-ui;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -382,4 +383,30 @@ input:checked + .slider::before {
     padding: 6px 18px;
     margin: 0;
     font-size: 0.95rem;
+}
+
+.or-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 12px 0;
+}
+
+.or-divider span {
+    background: rgba(255,255,255,0.12);
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #aaa;
+    letter-spacing: 1px;
+}
+
+.or-divider:before,
+.or-divider:after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #555;
+    margin: 0 8px;
+    opacity: 0.5;
 }
