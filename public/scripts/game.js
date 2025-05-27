@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameEnded = false;
     let drawCardsReceived = false;
     let lastSystemMessage = '';
+    const lastTurnLoginKey = `lastTurnLogin_${roomId}`;
+    let lastTurnLogin = localStorage.getItem(lastTurnLoginKey) || null;
 
     const nameToFile = {
         "😡😡😡": "Angry_cat",
@@ -231,6 +233,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function saveTurnStartTimeIfNeeded(roomId) {
+        const key = `turnStartTime_${roomId}`;
+        if (!localStorage.getItem(key)) {
+            localStorage.setItem(key, Date.now());
+        }
+    }
+    
+    function getTurnStartTime(roomId) {
+        return Number(localStorage.getItem(`turnStartTime_${roomId}`));
+    }
+
+    function clearTurnStartTime(roomId) {
+        localStorage.removeItem(`turnStartTime_${roomId}`);
+    }
+
     function updateTimerUI(secondsLeft) {
         if (timerSecondsText) timerSecondsText.textContent = secondsLeft;
         if (progressFill) progressFill.style.width = `${(secondsLeft / TURN_DURATION) * 100}%`;
@@ -245,8 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startTimer() {
-        turnStartTime = Date.now();
-        updateTimerUI(TURN_DURATION);
+        saveTurnStartTimeIfNeeded(roomId);
+        turnStartTime = getTurnStartTime(roomId);
+        updateTimerUI(TURN_DURATION - Math.floor((Date.now() - turnStartTime) / 1000));
         if (endTurnButton) {
             endTurnButton.disabled = false;
             endTurnButton.classList.add('active');
@@ -265,14 +283,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     socket.emit('end-turn', roomId);
                     cardPlayedThisTurn = false;
+                    clearTurnStartTime(roomId);
                 }
             }
         }, 200);
     }
 
     function showFullTimer() {
-        turnStartTime = Date.now();
-        updateTimerUI(TURN_DURATION);
+        saveTurnStartTimeIfNeeded(roomId);
+        turnStartTime = getTurnStartTime(roomId);
+        updateTimerUI(TURN_DURATION - Math.floor((Date.now() - turnStartTime) / 1000));
         if (endTurnButton) {
             endTurnButton.disabled = true;
             endTurnButton.classList.remove('active');
@@ -343,16 +363,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (shouldUpdateTimer) {
+            if (lastTurnLogin !== null && info.turn !== lastTurnLogin) {
+                clearTurnStartTime(roomId);
+            }
+
             if (info.turn === selfLogin) {
                 isPlayerTurn = true;
                 cardPlayedThisTurn = false;
+                saveTurnStartTimeIfNeeded(roomId);
                 startTimer();
                 addSystemMessage("It's your turn!");
             } else {
                 isPlayerTurn = false;
+                saveTurnStartTimeIfNeeded(roomId);
                 showFullTimer();
                 addSystemMessage(`It's ${info.turn}'s turn.`);
             }
+            lastTurnLogin = info.turn;
+            localStorage.setItem(`lastTurnLogin_${roomId}`, lastTurnLogin);
         }
     }
 
