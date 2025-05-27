@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastSystemMessage = '';
     const lastTurnLoginKey = `lastTurnLogin_${roomId}`;
     let lastTurnLogin = localStorage.getItem(lastTurnLoginKey) || null;
+    let myLogin = null;
+    let pendingGameEnded = null;
+    let winOrLoseSoundPlayed = false;
 
     const nameToFile = {
         "😡😡😡": "Angry_cat",
@@ -102,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     socket.emit('play-card', { roomId, card: name });
                     cardPlayedThisTurn = true;
-                }, 700);
+                }, 500);
             }
         });
 
@@ -501,6 +504,7 @@ async function fetchAndDisplayAvatar(oppLogin) {
     socket.on('broadcast-message', addMessage);
 
     socket.on('draw-cards', async function handleDrawCards(info) {
+        myLogin = info.player.login;
         drawCardsReceived = true;
         const playerLoginEl = document.getElementById('player-login');
         const opponentLoginEl = document.getElementById('opponent-login');
@@ -531,6 +535,11 @@ async function fetchAndDisplayAvatar(oppLogin) {
             showFullTimer();
         }
         updateFromInfo(info, true);
+
+        if (pendingGameEnded) {
+            showGameOverModal(pendingGameEnded.winner, pendingGameEnded.turns);
+            pendingGameEnded = null;
+        }
     });
 
     setTimeout(() => {
@@ -595,8 +604,23 @@ async function fetchAndDisplayAvatar(oppLogin) {
     renderOpponentCards(5);
 
     socket.on('game-ended', ({ winner, turns }) => {
-        gameEnded = true;
+        if (!myLogin) {
+            pendingGameEnded = { winner, turns };
+            return;
+        }
+        showGameOverModal(winner, turns);
+    });
 
+socket.on('disconnect-win', (info) => {
+    console.log(info);
+});
+
+    window.addEventListener('beforeunload', () => {
+        socket.disconnect();
+    });
+
+    function showGameOverModal(winner, turns) {
+        gameEnded = true;
         stopTimer();
 
         if (bgMusic) {
@@ -604,7 +628,6 @@ async function fetchAndDisplayAvatar(oppLogin) {
             bgMusic.currentTime = 0;
         }
 
-        const selfLogin = document.getElementById('player-login').textContent;
         const modal = document.getElementById('game-over-modal');
         const title = document.getElementById('game-over-title');
         const turnsText = document.getElementById('game-over-turns');
@@ -616,15 +639,16 @@ async function fetchAndDisplayAvatar(oppLogin) {
         const modalContent = document.querySelector('.game-over-content');
         modalContent.classList.remove('win', 'lose');
 
-        if (winner.login === selfLogin) {
+        if (winner.login === myLogin) {
             modalContent.classList.add('win');
             title.textContent = 'Victory!';
             message.textContent = `You won! Great success!`;
             image.src = '/images/win.jpg';
             image.style.display = 'block';
-            if (soundEnabled && winSound) {
+            if (!winOrLoseSoundPlayed && soundEnabled && winSound) {
                 winSound.currentTime = 0;
                 winSound.play();
+                winOrLoseSoundPlayed = true;
             }
         } else {
             modalContent.classList.add('lose');
@@ -632,24 +656,17 @@ async function fetchAndDisplayAvatar(oppLogin) {
             message.textContent = `Oh noo.. You lost... Better luck next time)`;
             image.src = '/images/lose.jpg';
             image.style.display = 'block';
-            if (soundEnabled && loseSound) {
+            if (!winOrLoseSoundPlayed && soundEnabled && loseSound) {
                 loseSound.currentTime = 0;
                 loseSound.play();
+                winOrLoseSoundPlayed = true;
             }
         }
         turnsText.textContent = `Number of moves: ${turns}`;
         modal.classList.remove('hidden');
 
-    exitBtn.onclick = () => {
-        window.location.href = '/';
-    };
-});
-
-socket.on('disconnect-win', (info) => {
-    console.log(info);
-});
-
-    window.addEventListener('beforeunload', () => {
-        socket.disconnect();
-    });
+        exitBtn.onclick = () => {
+            window.location.href = '/';
+        };
+    }
 });

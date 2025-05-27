@@ -657,7 +657,7 @@ button:hover {
 }
 
 .card-disappearing {
-    animation: cardFadeOut 0.7s forwards;
+    animation: cardFadeOut 0.5s forwards;
 }
 
 @keyframes cardFadeOut {
