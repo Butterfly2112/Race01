@@ -40,41 +40,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let winOrLoseSoundPlayed = false;
 
     const nameToFile = {
-        "😡😡😡": "Angry_cat",
-        "Abduction!": "Abduction",
-        "That’s suspicious": "That’s suspicious",
-        "Bombastic side eye": "Bombastic side eye",
-        "eepy car": "eepy cat",
-        "Me and Pookie🩷": "Me and Pookie",
-        "HAHAHFIUSEJHIOHDS": "HAHAHFIUSEJHIOHDS",
-        "Sniffer": "Sniffer",
-        "Absolute Cinema": "Absolute Cinema",
-        "I’m just a boy🧢": "I’m just a boy",
-        "Good Boy": "Good boy",
-        "What Are You Looking At?": "What Are You Looking At",
-        "Problem Solved": "Problem Solved",
-        "Let Him Cook": "Let Him Cook",
-        "He Knows What You Did": "He knows what you did",
-        "Smoll🤏": "Smoll",
-        "Side-Eye": "Side-eye",
-        "Nerd": "Uhm, actually",
-        "Loading...": "Loading",
-        "Hehe": "Hehe",
-        "Night furry": "Night furry",
-        "Meowgiсian": "Meowgitian",
-        "The light of hope": "The light of hope",
-        "Wewewe": "Wewewe",
-        "Espionage Agent": "Espionage Agent",
-        "All in": "All in",
-        "True pain": "True pain",
-        "Wait… What?": "Wait What",
-        "Zoning Out": "Zoning Out",
-        "How dare you?": "How dare you"
+        "😡😡😡": "Angry_cat.png",
+        "Abduction!": "Abduction.gif",
+        "That’s suspicious": "That’s suspicious.gif",
+        "Bombastic side eye": "Bombastic side eye.gif",
+        "eepy car": "eepy cat.gif",
+        "Me and Pookie🩷": "Me and Pookie.gif",
+        "HAHAHFIUSEJHIOHDS": "HAHAHFIUSEJHIOHDS.gif",
+        "Sniffer": "Sniffer.gif",
+        "Absolute Cinema": "Absolute Cinema.gif",
+        "I’m just a boy🧢": "I’m just a boy.png",
+        "Good Boy": "Good boy.png",
+        "What Are You Looking At?": "What Are You Looking At.png",
+        "Problem Solved": "Problem Solved.png",
+        "Let Him Cook": "Let Him Cook.png",
+        "He Knows What You Did": "He knows what you did.png",
+        "Smoll🤏": "Smoll.png",
+        "Side-Eye": "Side-eye.png",
+        "Nerd": "Uhm, actually.png",
+        "Loading...": "Loading.png",
+        "Hehe": "Hehe.png",
+        "Night furry": "Night furry.png",
+        "Meowgiсian": "Meowgitian.png",
+        "The light of hope": "The light of hope.png",
+        "Wewewe": "Wewewe.png",
+        "Espionage Agent": "Espionage Agent.png",
+        "All in": "All in.png",
+        "True pain": "True pain.png",
+        "Wait… What?": "Wait What.png",
+        "Zoning Out": "Zoning Out.png",
+        "How dare you?": "How dare you.png"
     };
 
     const cardNameToImage = name => {
         const file = nameToFile[name?.trim()];
-        return file ? `/images/${encodeURIComponent(file)}.png` : null;
+        return file ? `/images/${encodeURIComponent(file)}` : null;
     };
 
     function addMessage(message) {
