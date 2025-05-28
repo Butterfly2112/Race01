@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let myLogin = null;
     let pendingGameEnded = null;
     let winOrLoseSoundPlayed = false;
-    let disconnectTimeout = null;
 
     const nameToFile = {
         "😡😡😡": "Angry_cat",
