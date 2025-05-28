@@ -9,7 +9,7 @@ const secret = process.env.JWT_SECRET || 'mystrongsecretkey';
 export const guests = new Map();
 
 export const registerUser = async (req, res) => {
-    const { login, password, confirm_pass, fullname, email_address } = req.body;
+    const { login, password, confirm_pass, email_address } = req.body;
 
     if (password !== confirm_pass) {
         return res.status(400).json({error: 'Passwords do not match'});
@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
 
-        const response = await User.save(login, hash, fullname, email_address);
+        const response = await User.save(login, hash, email_address);
 
         if (response.error_code) {
             return res.status(400).json({error: response.error_message});

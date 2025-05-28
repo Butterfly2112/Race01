@@ -65,14 +65,14 @@ class Users extends Model {
         });
     }
 
-    static save(login, password, fullname, email, status = 'user') {
+    static save(login, password, email) {
         return new Promise((resolve, reject) => {
             connection.query('SELECT * FROM users WHERE login = ?', [login], (err, res) => {
                 if (err) return reject(new Error(`Failed to process a query: ${err}`));
 
                 if (!res[0]) {
-                    connection.query('INSERT INTO users(login, password, fullname, email_address, status, profile_picture) ' +
-                        'VALUES (?, ?, ?, ?, ?, ?)', [login, password, fullname, email, status, './uploads/default.png'],
+                    connection.query('INSERT INTO users(login, password, email_address, profile_picture) ' +
+                        'VALUES (?, ?, ?, ?)', [login, password, email, './uploads/default.png'],
                         (err, res) => {
                             if (err) {
                                 return resolve({error_code: 'EMAIL_EXISTS', error_message: 'This email already exists'});
