@@ -38,7 +38,7 @@ Requirements
 
 Clone the repo and go into the folder:
 
-`git clone https://github.com/your-username/card-game.git`
+`https://github.com/Butterfly2112/Race01.git`
 
 `cd Race01`
 
