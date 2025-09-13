@@ -37,14 +37,17 @@ Requirements
 (For macOS users, you can install via Homebrew: brew install node mysql)
 
 Clone the repo and go into the folder:
-
-`https://github.com/Butterfly2112/Race01.git`
-
-`cd Race01`
+```bash
+https://github.com/Butterfly2112/Race01.git
+```
+```bash
+cd Race01
+```
 
 Install dependencies:
-
-`npm install`
+```bash
+npm install
+```
 
 
 Adjust the database settings in config.json to match your MySQL setup.
@@ -54,18 +57,18 @@ Adjust the database settings in config.json to match your MySQL setup.
 ✅ Run the app
 
 Start the server:
-
-`node app.js`
-
-
+```bash
+node app.js
+```
 or (dev mode):
 
-`npm run dev`
-
+```bash
+npm run dev
+```
 
 Then open:
-
-`http://localhost:3000/`
-
+```bash
+http://localhost:3000/
+```
 
 To test multiplayer, open the game in two different browsers or in an incognito tab.
